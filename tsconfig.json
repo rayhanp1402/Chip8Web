@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "strict": true,
+      "allowJs": false,
+      "outDir": "./scripts/out",
+      "rootDir": "./scripts/src",
+      "noImplicitAny": true,
+      "forceConsistentCasingInFileNames": true
+    }
+  }  
