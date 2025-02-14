@@ -27,10 +27,20 @@ body {
 }
 
 .dropdown-toggle:hover,
-.dropdown-toggle:focus {
+.dropdown-toggle:focus,
+.dropdown-toggle:active,
+.dropdown-toggle.show {
     background: #00FF33;
     color: #000000;
     border-color: #00FF33;
+}
+
+.dropdown-toggle:focus, 
+.dropdown-toggle:active {
+    box-shadow: none;
+    outline: none;
+    background: #00FF33;
+    color: #000000;
 }
 
 .dropdown-menu {
