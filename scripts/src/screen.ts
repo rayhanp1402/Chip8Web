@@ -1,3 +1,8 @@
+const offColor = "#000000";
+const onColor = "#00FF33";
+const pixelWidth = 64;  // Default CHIP-8 pixel width
+const pixelHeight = 32; // Default CHIP-8 pixel height
+
 // Standard canvas and context setup steps
 const canvas = document.getElementById("screen") as HTMLCanvasElement | null;
 
@@ -12,8 +17,6 @@ if (!context) {
 }
 
 // Canvas resolution (logical pixels)
-const pixelWidth = 64;
-const pixelHeight = 32;
 canvas.width = pixelWidth;
 canvas.height = pixelHeight;
 
@@ -26,5 +29,5 @@ canvas.style.imageRendering = "pixelated";  // Ensures crisp pixels in modern br
 context.imageSmoothingEnabled = false;  // Disable anti-aliasing
 
 // Fills the canvas with the color black
-context.fillStyle = "#000000";
+context.fillStyle = offColor;
 context.fillRect(0, 0, pixelWidth, pixelHeight);

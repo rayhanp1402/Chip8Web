@@ -9,6 +9,7 @@ body {
 
 #screen {
     border: 1px solid #00FF33;
+    border-radius: 5px;
 }
 
 .dropdown-container {
