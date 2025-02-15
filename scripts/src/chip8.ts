@@ -116,8 +116,6 @@ export class CHIP8 {
         switch(this.firstNibble[0]) {
             case 0x00:
                 switch(this.NNN[0]) {
-                    case 0x000:
-                        break;
                     case 0x0E0:
                         this.clearScreen();
                         break;
