@@ -1,5 +1,3 @@
-const fontsetSize = 80;
-
 class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
     V = new Uint8Array(16);
@@ -54,6 +52,10 @@ class CHIP8 {
     ];
 
     constructor() {
+        this.PC[0] = 0x200; // ROMs start at address 0x200
+
+        // Fonts stored in addresses 0x050-0x0A0
+        const fontsetSize = 80;
         const fontsetStartAddress = 0x50;
 
         // Loads the fonts into memory
@@ -61,4 +63,17 @@ class CHIP8 {
             this.memory[fontsetStartAddress + i] = this.fontset[i];
         }
     };
+
+    loadROM(romData: Uint8Array) {
+        this.PC[0] = 0x200; // Resets the PC
+
+        if (romData.length > (4096 - 0x200)) {
+            throw new Error("ROM is too large to fit in memory!");
+        }
+
+        // Loads ROM bytes into memory
+        for (let i = 0; i < romData.length; i++) {
+            this.memory[0x200 + i] = romData[i];
+        }
+    }
 }
