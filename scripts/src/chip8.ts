@@ -67,6 +67,8 @@ export class CHIP8 {
     // Display representation
     display = Array.from({ length: 32 }, () => Array(64).fill(0));
 
+    runLoop: number | undefined;
+
     constructor() {
         this.PC[0] = 0x200; // ROMs start at address 0x200
 
@@ -105,7 +107,7 @@ export class CHIP8 {
         this.firstNibble[0] = (this.instruction[0] & 0xF000) >> 12;
         this.X[0] = (this.instruction[0] & 0x0F00) >> 8;
         this.Y[0] = (this.instruction[0] & 0x00F0) >> 4;
-        this.N[0] = (this.instruction[0] & 0x00F0);
+        this.N[0] = (this.instruction[0] & 0x000F);
         this.NN[0] = (this.instruction[0] & 0x00FF);
         this.NNN[0] = (this.instruction[0] & 0x0FFF);
     };
@@ -114,6 +116,8 @@ export class CHIP8 {
         switch(this.firstNibble[0]) {
             case 0x00:
                 switch(this.NNN[0]) {
+                    case 0x000:
+                        break;
                     case 0x0E0:
                         this.clearScreen();
                         break;
@@ -122,6 +126,7 @@ export class CHIP8 {
                     default:
                         throw new Error("Opcode not implemented yet.");
                 }
+                break;
             case 0x01:
                 this.jumpTo(this.NNN);
                 break;
@@ -151,7 +156,8 @@ export class CHIP8 {
             case 0x0C:
                 throw new Error("Opcode not implemented yet.");
             case 0x0D:
-                throw new Error("Opcode not implemented yet.");
+                this.draw(this.X, this.Y, this.N);
+                break;
             case 0x0E:
                 throw new Error("Opcode not implemented yet.");
             case 0x0F:
@@ -159,6 +165,24 @@ export class CHIP8 {
             default:
                 throw new Error("Opcode not found!");
         };
+    };
+
+    cycle() {
+        if (this.PC[0] > 0xFFF) { 
+            console.error("Program counter exceeded memory! Halting execution.");
+            clearInterval(this.runLoop);
+            return;
+        }
+
+        this.fetch();
+        this.decode();
+        this.execute();
+    };
+
+    run() {
+        this.runLoop = setInterval(() => {
+            this.cycle();
+        }, 16);  // ~60Hz
     };
 
     clearScreen() {
@@ -207,18 +231,18 @@ export class CHIP8 {
                 spritePixel[0] = spriteByte[0] & (0x80 >> col);
 
                 if (spritePixel[0]) {
-                    this.V[0xF] = (this.display[xAxis + row][yAxis + col]) ? 1 : 0;
-                    this.display[xAxis + row][yAxis + col] ^= 1;
-                } else {
-                    this.display[xAxis + row][yAxis + col] ^= 0;
-                }
+                    const x = (xAxis + col) % PIXEL_WIDTH;
+                    const y = (yAxis + row) % PIXEL_HEIGHT;
 
-                if (this.display[xAxis + row][yAxis + col]) {
-                    CONTEXT.fillStyle = ON_COLOR;
-                } else {
-                    CONTEXT.fillStyle = OFF_COLOR;
+                    if (this.display[y][x] === 1) {
+                        this.V[0xF] = 1;
+                    }
+
+                    this.display[y][x] ^= 1;
+
+                    CONTEXT.fillStyle = this.display[y][x] ? ON_COLOR : OFF_COLOR;
+                    CONTEXT.fillRect(x, y, 1, 1);
                 }
-                CONTEXT.fillRect(xAxis + row, yAxis + col, 1, 1);
             };
         };
     };
