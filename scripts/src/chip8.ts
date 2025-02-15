@@ -1,4 +1,4 @@
-import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT } from "./screen.js";
+import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT, ON_COLOR } from "./screen.js";
 
 export class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
@@ -186,5 +186,40 @@ export class CHIP8 {
 
     loadIndex(address: Uint16Array) {
         this.I[0] = address[0];
+    };
+
+    draw(xAxisRegister: Uint8Array, yAxisRegister: Uint8Array, height: Uint8Array) {
+        const xAxis = this.V[xAxisRegister[0]] % PIXEL_WIDTH;
+        const yAxis = this.V[yAxisRegister[0]] % PIXEL_HEIGHT;
+        this.V[0xF] = 0;
+
+        let spriteByte = new Uint8Array(1);
+        let spritePixel = new Uint8Array(1);
+
+        if (!CONTEXT) {
+            throw new Error("Context not found!");
+        }
+
+        for (let row = 0; row < height[0]; ++row) {
+            spriteByte[0] = this.memory[this.I[0] + row];
+            
+            for (let col = 0; col < 8; ++col) {
+                spritePixel[0] = spriteByte[0] & (0x80 >> col);
+
+                if (spritePixel[0]) {
+                    this.V[0xF] = (this.display[xAxis + row][yAxis + col]) ? 1 : 0;
+                    this.display[xAxis + row][yAxis + col] ^= 1;
+                } else {
+                    this.display[xAxis + row][yAxis + col] ^= 0;
+                }
+
+                if (this.display[xAxis + row][yAxis + col]) {
+                    CONTEXT.fillStyle = ON_COLOR;
+                } else {
+                    CONTEXT.fillStyle = OFF_COLOR;
+                }
+                CONTEXT.fillRect(xAxis + row, yAxis + col, 1, 1);
+            };
+        };
     };
 };
