@@ -23,6 +23,17 @@ class CHIP8 {
     // Sound Timer
     sound = new Uint8Array(1);
 
+    // Opcode
+    instruction = new Uint16Array(1);
+
+    // Opcode separation based on pattern
+    firstNibble = new Uint8Array(1);    // First 4-bits (nibble)
+    X = new Uint8Array(1);              // Second nibble
+    Y = new Uint8Array(1);              // Third nibble
+    N = new Uint8Array(1);              // Fourth nibble
+    NN = new Uint8Array(1);             // Third and fourth nibbles
+    NNN = new Uint16Array(1);           // Second, third, and fourth nibbles
+
     // Keypads, using KeyboardEvent codes
     keyMap = {
         "Digit1": 0x1, "Digit2": 0x2, "Digit3": 0x3, "Digit4": 0xC,
@@ -75,5 +86,61 @@ class CHIP8 {
         for (let i = 0; i < romData.length; i++) {
             this.memory[0x200 + i] = romData[i];
         }
-    }
+    };
+
+    fetch() {
+        // Gets two successive bytes in memory and concatenates them into a 2-bytes instruction
+        this.instruction[0] = (this.memory[this.PC[0]] << 8) | (this.memory[this.PC[0] + 1]);
+
+        this.PC[0] += 2;
+    };
+
+    decode() {
+        // Classify/separate the bits in the instruction
+        this.firstNibble[0] = (this.instruction[0] & 0xF000) >> 12;
+        this.X[0] = (this.instruction[0] & 0x0F00) >> 8;
+        this.Y[0] = (this.instruction[0] & 0x00F0) >> 4;
+        this.N[0] = (this.instruction[0] & 0x00F0);
+        this.NN[0] = (this.instruction[0] & 0x00FF);
+        this.NNN[0] = (this.instruction[0] & 0x0FFF);
+    };
+
+    execute() {
+        switch(this.firstNibble[0]) {
+            case 0x00:
+                throw new Error("Opcode not implemented yet.")
+            case 0x01:
+                throw new Error("Opcode not implemented yet.")
+            case 0x02:
+                throw new Error("Opcode not implemented yet.")
+            case 0x03:
+                throw new Error("Opcode not implemented yet.")
+            case 0x04:
+                throw new Error("Opcode not implemented yet.")
+            case 0x05:
+                throw new Error("Opcode not implemented yet.")
+            case 0x06:
+                throw new Error("Opcode not implemented yet.")
+            case 0x07:
+                throw new Error("Opcode not implemented yet.")
+            case 0x08:
+                throw new Error("Opcode not implemented yet.")
+            case 0x09:
+                throw new Error("Opcode not implemented yet.")
+            case 0x0A:
+                throw new Error("Opcode not implemented yet.")
+            case 0x0B:
+                throw new Error("Opcode not implemented yet.")
+            case 0x0C:
+                throw new Error("Opcode not implemented yet.")
+            case 0x0D:
+                throw new Error("Opcode not implemented yet.")
+            case 0x0E:
+                throw new Error("Opcode not implemented yet.")
+            case 0x0F:
+                throw new Error("Opcode not implemented yet.")
+            default:
+                throw new Error("Opcode not found!");
+        };
+    };
 }
