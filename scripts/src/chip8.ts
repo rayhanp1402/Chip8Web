@@ -123,33 +123,35 @@ class CHIP8 {
                 this.jumpTo(this.NNN);
                 break;
             case 0x02:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x03:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x04:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x05:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x06:
-                throw new Error("Opcode not implemented yet.")
+                this.load(this.X, this.NN);
+                break;
             case 0x07:
-                throw new Error("Opcode not implemented yet.")
+                this.add(this.X, this.NN);
+                break;
             case 0x08:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x09:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x0A:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x0B:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x0C:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x0D:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x0E:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             case 0x0F:
-                throw new Error("Opcode not implemented yet.")
+                throw new Error("Opcode not implemented yet.");
             default:
                 throw new Error("Opcode not found!");
         };
@@ -166,5 +168,15 @@ class CHIP8 {
 
     jumpTo(address: Uint16Array) {
         this.PC[0] = address[0];
+    };
+
+    load(registerOrder: Uint8Array, value: Uint8Array) {
+        // Loads 1-byte value to register Vx, where x is the register's order (0-F)
+        this.V[registerOrder[0]] = value[0];
+    };
+
+    add(registerOrder: Uint8Array, value: Uint8Array) {
+        // Adds 1-byte value to register Vx, where x is the register's order (0-F)
+        this.V[registerOrder[0]] += value[0];
     };
 };
