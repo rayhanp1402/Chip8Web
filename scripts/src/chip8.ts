@@ -1,6 +1,6 @@
-import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT } from "./screen";
+import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT } from "./screen.js";
 
-class CHIP8 {
+export class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
     V = new Uint8Array(16);
     
@@ -63,6 +63,9 @@ class CHIP8 {
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     ];
+
+    // Display representation
+    display = Array.from({ length: 32 }, () => Array(64).fill(0));
 
     constructor() {
         this.PC[0] = 0x200; // ROMs start at address 0x200
@@ -131,17 +134,18 @@ class CHIP8 {
             case 0x05:
                 throw new Error("Opcode not implemented yet.");
             case 0x06:
-                this.load(this.X, this.NN);
+                this.loadRegister(this.X, this.NN);
                 break;
             case 0x07:
-                this.add(this.X, this.NN);
+                this.addRegister(this.X, this.NN);
                 break;
             case 0x08:
                 throw new Error("Opcode not implemented yet.");
             case 0x09:
                 throw new Error("Opcode not implemented yet.");
             case 0x0A:
-                throw new Error("Opcode not implemented yet.");
+                this.loadIndex(this.NNN);
+                break;
             case 0x0B:
                 throw new Error("Opcode not implemented yet.");
             case 0x0C:
@@ -170,13 +174,17 @@ class CHIP8 {
         this.PC[0] = address[0];
     };
 
-    load(registerOrder: Uint8Array, value: Uint8Array) {
+    loadRegister(registerOrder: Uint8Array, value: Uint8Array) {
         // Loads 1-byte value to register Vx, where x is the register's order (0-F)
         this.V[registerOrder[0]] = value[0];
     };
 
-    add(registerOrder: Uint8Array, value: Uint8Array) {
+    addRegister(registerOrder: Uint8Array, value: Uint8Array) {
         // Adds 1-byte value to register Vx, where x is the register's order (0-F)
         this.V[registerOrder[0]] += value[0];
+    };
+
+    loadIndex(address: Uint16Array) {
+        this.I[0] = address[0];
     };
 };
