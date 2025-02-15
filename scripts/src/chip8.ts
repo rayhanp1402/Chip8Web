@@ -1,3 +1,5 @@
+import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT } from "./screen";
+
 class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
     V = new Uint8Array(16);
@@ -108,9 +110,18 @@ class CHIP8 {
     execute() {
         switch(this.firstNibble[0]) {
             case 0x00:
-                throw new Error("Opcode not implemented yet.")
+                switch(this.NNN[0]) {
+                    case 0x0E0:
+                        this.clearScreen();
+                        break;
+                    case 0x0EE:
+                        throw new Error("Opcode not implemented yet.");
+                    default:
+                        throw new Error("Opcode not implemented yet.");
+                }
             case 0x01:
-                throw new Error("Opcode not implemented yet.")
+                this.jumpTo(this.NNN);
+                break;
             case 0x02:
                 throw new Error("Opcode not implemented yet.")
             case 0x03:
@@ -143,4 +154,17 @@ class CHIP8 {
                 throw new Error("Opcode not found!");
         };
     };
-}
+
+    clearScreen() {
+        if (!CONTEXT) {
+            throw new Error("Context not found!");
+        }
+
+        CONTEXT.fillStyle = OFF_COLOR;
+        CONTEXT.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
+    };
+
+    jumpTo(address: Uint16Array) {
+        this.PC[0] = address[0];
+    };
+};

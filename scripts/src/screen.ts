@@ -1,7 +1,7 @@
-const offColor = "#000000";
-const onColor = "#00FF33";
-const pixelWidth = 64;  // Default CHIP-8 pixel width
-const pixelHeight = 32; // Default CHIP-8 pixel height
+export const OFF_COLOR = "#000000";
+export const ON_COLOR = "#00FF33";
+export const PIXEL_WIDTH = 64;  // Default CHIP-8 pixel width
+export const PIXEL_HEIGHT = 32; // Default CHIP-8 pixel height
 
 // Standard canvas and context setup steps
 const canvas = document.getElementById("screen") as HTMLCanvasElement | null;
@@ -10,24 +10,24 @@ if (!canvas) {
   throw new Error("Canvas element not found!");
 }
 
-const context = canvas.getContext("2d") as CanvasRenderingContext2D | null;
+export const CONTEXT = canvas.getContext("2d") as CanvasRenderingContext2D | null;
 
-if (!context) {
+if (!CONTEXT) {
     throw new Error("Context not found!");
 }
 
 // Canvas resolution (logical pixels)
-canvas.width = pixelWidth;
-canvas.height = pixelHeight;
+canvas.width = PIXEL_WIDTH;
+canvas.height = PIXEL_HEIGHT;
 
 // Scale the canvas using CSS to upscale it while maintaining the pixel grid
 const scale = 12;
-canvas.style.width = `${pixelWidth * scale}px`;
-canvas.style.height = `${pixelHeight * scale}px`;
+canvas.style.width = `${PIXEL_WIDTH * scale}px`;
+canvas.style.height = `${PIXEL_HEIGHT * scale}px`;
 
 canvas.style.imageRendering = "pixelated";  // Ensures crisp pixels in modern browsers
-context.imageSmoothingEnabled = false;  // Disable anti-aliasing
+CONTEXT.imageSmoothingEnabled = false;  // Disable anti-aliasing
 
 // Fills the canvas with the color black
-context.fillStyle = offColor;
-context.fillRect(0, 0, pixelWidth, pixelHeight);
+CONTEXT.fillStyle = OFF_COLOR;
+CONTEXT.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
