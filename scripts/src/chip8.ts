@@ -211,33 +211,41 @@ export class CHIP8 {
     };
 
     draw(xAxisRegister: Uint8Array, yAxisRegister: Uint8Array, height: Uint8Array) {
+        // Get X and Y coordinates from registers VX and VY respectively. Modulus to wrap them within screen bounds.
         const xAxis = this.V[xAxisRegister[0]] % PIXEL_WIDTH;
         const yAxis = this.V[yAxisRegister[0]] % PIXEL_HEIGHT;
+
+        // Reset collision flag (V[0xF] is used to indicate collision)
+        // Collision is when a sprite is drawn into an 'active/on' display, which 'deactivate' the display
         this.V[0xF] = 0;
 
         let spriteByte = new Uint8Array(1);
-        let spritePixel = new Uint8Array(1);
+        let spritePixel = new Uint8Array(1); // Sprite bit that will be extracted from spriteByte
 
         if (!CONTEXT) {
             throw new Error("Context not found!");
         }
 
+        // Loop through each row of the sprite bytes in memory
         for (let row = 0; row < height[0]; ++row) {
             spriteByte[0] = this.memory[this.I[0] + row];
             
+            // Loop through each bit (column) in the 8-bit wide sprite row
             for (let col = 0; col < 8; ++col) {
                 spritePixel[0] = spriteByte[0] & (0x80 >> col);
 
                 if (spritePixel[0]) {
+                    // Again, modulus used to wrap within screen bounds
                     const x = (xAxis + col) % PIXEL_WIDTH;
                     const y = (yAxis + row) % PIXEL_HEIGHT;
 
-                    if (this.display[y][x] === 1) {
+                    if (this.display[y][x] === 1) { // Collision found
                         this.V[0xF] = 1;
                     }
 
                     this.display[y][x] ^= 1;
 
+                    // Update the canvas accordingly
                     CONTEXT.fillStyle = this.display[y][x] ? ON_COLOR : OFF_COLOR;
                     CONTEXT.fillRect(x, y, 1, 1);
                 }
