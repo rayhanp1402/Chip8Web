@@ -67,6 +67,7 @@ export class CHIP8 {
     // Display representation
     display = Array.from({ length: 32 }, () => Array(64).fill(0));
 
+    // ID for CPU cycle interval
     runLoop: number | undefined;
 
     constructor() {
@@ -180,7 +181,7 @@ export class CHIP8 {
     run() {
         this.runLoop = setInterval(() => {
             this.cycle();
-        }, 16);  // ~60Hz
+        }, 2);  // 500Hz
     };
 
     clearScreen() {
