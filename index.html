@@ -9,15 +9,19 @@
     <link rel="stylesheet" href="styles/default.css">
 </head>
 <body>
-    <canvas id="screen"></canvas>
+    <div class="root-container">
+        <canvas id="screen"></canvas>
 
-    <div class="dropdown-container dropdown">
-        <button class="btn dropdown-toggle" type="button" id="gameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            Select ROM
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="gameDropdown">
-            <li><a class="dropdown-item" href="#">IBM Logo</a></li>
-        </ul>
+        <div class="feature-buttons-container">
+            <div class="dropdown-container dropdown">
+                <button class="btn dropdown-toggle" type="button" id="gameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select ROM
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="gameDropdown">
+                    <li><a class="dropdown-item" href="#">IBM Logo</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

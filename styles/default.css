@@ -1,10 +1,16 @@
 body {
     display: flex;
-    justify-content: center;
-    background-color: #282c34;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center; /* Center the root-container horizontally */
+    align-items: center; /* Center the root-container vertically */
     height: 100vh;
+    background-color: #282c34;
+    margin: 0;
+}
+
+.root-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: flex-start; /* Aligns inner elements to the left */
 }
 
 #screen {
@@ -58,4 +64,9 @@ button:active,
 .dropdown-item:hover {
     background: #00FF33;
     color: #000000;
+}
+
+.feature-buttons-container {
+    display: flex;
+    gap: 10px;
 }
