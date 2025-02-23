@@ -63,22 +63,22 @@
                     <div id="collapseRegisters" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="registers-and-stack-output">
-                                <pre class="disassembler-content">V0: 0x50</pre>
-                                <pre class="disassembler-content">V1: 0x50</pre>
-                                <pre class="disassembler-content">V2: 0x50</pre>
-                                <pre class="disassembler-content">V3: 0x50</pre>
-                                <pre class="disassembler-content">V4: 0x50</pre>
-                                <pre class="disassembler-content">V5: 0x50</pre>
-                                <pre class="disassembler-content">V6: 0x50</pre>
-                                <pre class="disassembler-content">V7: 0x50</pre>
-                                <pre class="disassembler-content">V8: 0x50</pre>
-                                <pre class="disassembler-content">V9: 0x50</pre>
-                                <pre class="disassembler-content">VA: 0x50</pre>
-                                <pre class="disassembler-content">VB: 0x50</pre>
-                                <pre class="disassembler-content">VC: 0x50</pre>
-                                <pre class="disassembler-content">VD: 0x50</pre>
-                                <pre class="disassembler-content">VE: 0x50</pre>
-                                <pre class="disassembler-content">VF: 0x50</pre>
+                                <pre class="disassembler-content">V0: 0x00</pre>
+                                <pre class="disassembler-content">V1: 0x00</pre>
+                                <pre class="disassembler-content">V2: 0x00</pre>
+                                <pre class="disassembler-content">V3: 0x00</pre>
+                                <pre class="disassembler-content">V4: 0x00</pre>
+                                <pre class="disassembler-content">V5: 0x00</pre>
+                                <pre class="disassembler-content">V6: 0x00</pre>
+                                <pre class="disassembler-content">V7: 0x00</pre>
+                                <pre class="disassembler-content">V8: 0x00</pre>
+                                <pre class="disassembler-content">V9: 0x00</pre>
+                                <pre class="disassembler-content">VA: 0x00</pre>
+                                <pre class="disassembler-content">VB: 0x00</pre>
+                                <pre class="disassembler-content">VC: 0x00</pre>
+                                <pre class="disassembler-content">VD: 0x00</pre>
+                                <pre class="disassembler-content">VE: 0x00</pre>
+                                <pre class="disassembler-content">VF: 0x00</pre>
                             </div>
                         </div>
                     </div>
@@ -95,9 +95,9 @@
                     <div id="collapseSpecialRegisters" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             <div class="special-registers-output">
-                                <pre class="disassembler-content">PC: 0x50</pre>
-                                <pre class="disassembler-content">SP: 0x50</pre>
-                                <pre class="disassembler-content">Index: 0x50</pre>
+                                <pre class="disassembler-content">PC: 0x00</pre>
+                                <pre class="disassembler-content">SP: 0x00</pre>
+                                <pre class="disassembler-content">Index: 0x00</pre>
                             </div>
                         </div>
                     </div>
@@ -113,22 +113,8 @@
                     </h2>
                     <div id="collapseStack" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <div class="registers-and-stack-output">
-                                <pre class="disassembler-content">0: 0x200</pre>
-                                <pre class="disassembler-content">1: 0x220</pre>
-                                <pre class="disassembler-content">3: 0x250</pre>
-                                <pre class="disassembler-content">4: 0x250</pre>
-                                <pre class="disassembler-content">5: 0x250</pre>
-                                <pre class="disassembler-content">6: 0x250</pre>
-                                <pre class="disassembler-content">7: 0x250</pre>
-                                <pre class="disassembler-content">8: 0x250</pre>
-                                <pre class="disassembler-content">9: 0x250</pre>
-                                <pre class="disassembler-content">10: 0x250</pre>
-                                <pre class="disassembler-content">11: 0x250</pre>
-                                <pre class="disassembler-content">12: 0x250</pre>
-                                <pre class="disassembler-content">13: 0x250</pre>
-                                <pre class="disassembler-content">14: 0x250</pre>
-                                <pre class="disassembler-content">15: 0x250</pre>
+                            <div class="registers-and-stack-output" id="stack-output-contents">
+                                <!-- Content is populated in JS -->
                             </div>
                         </div>
                     </div>
@@ -160,35 +146,25 @@
                         </button>
                     </h2>
                     <div id="collapseMemory" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <div class="memory-output">
-                                <pre class="memory-address">Address</pre>
-                                <pre class="memory-address">0x01</pre>
-                                <pre class="memory-address">0x02</pre>
-                                <pre class="memory-address">0x03</pre>
-                                <pre class="memory-address">0x04</pre>
-                                <pre class="memory-address">0x05</pre>
-                                <pre class="memory-address">0x06</pre>
-                                <pre class="memory-address">0x07</pre>
-                                <pre class="memory-address">0x08</pre>
-                                <pre class="memory-address">0x09</pre>
-                                <pre class="memory-address">0x0A</pre>
-                                <pre class="memory-address">0x0B</pre>
-                                <pre class="memory-address">0x0C</pre>
-                                <pre class="memory-address">0x0D</pre>
-                                <pre class="memory-address">0x0E</pre>
-                                <pre class="memory-address">0x0F</pre>
+                        <div class="accordion-body d-flex">
+                            <div class="memory-output mt-2 flex-grow-1" id="memory-output-contents">
+                                <!-- Content is populated in JS -->
+                            </div>
+                            <div class="d-flex flex-column ms-3">
+                                <button class="memory-btn mb-2" id="memory-up">Up</button>
+                                <button class="memory-btn" id="memory-down">Down</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>                       
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="scripts/out/screen.js"></script>
     <script type="module" src="scripts/out/keypad_visual.js"></script>
+    <script type="module" src="scripts/out/disassembler.js"></script>
     <script type="module" src="scripts/out/chip8.js"></script>
     <script type="module" src="scripts/out/emulator.js"></script>
 </body>
