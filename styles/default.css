@@ -125,3 +125,11 @@ button:active,
     margin-left: 20px;
     margin-bottom: 10px;
 }
+
+/* Added so the keypad_visual script can use classList.add('active') */
+/* Style is the same as .key:active */
+.key.active {
+    transform: scale(0.9);
+    background: #00CC29;
+    box-shadow: 0px 0px 5px rgba(0, 255, 51, 0.5);
+}

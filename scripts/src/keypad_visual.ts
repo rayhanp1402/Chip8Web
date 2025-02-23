@@ -21,14 +21,16 @@ const keyElementMap: Record<string, HTMLElement> = {
 // Interact with keypad elements in the HTML using keyboard
 // Follows the CSS .key:active style when keyboard is pressed
 document.addEventListener("keydown", (e) => {
-    keyElementMap[e.code].style.transform = "scale(0.9)";
-    keyElementMap[e.code].style.background = "#00CC29";
-    keyElementMap[e.code].style.boxShadow = "0px 0px 5px rgba(0, 255, 51, 0.5)";
+    if (e.code in keyElementMap) {
+        keyElementMap[e.code].classList.add("active");
+        console.log(`${e.code} is pressed!`);
+    }
 });
 
 // Revert to original style when keyboard is released
 document.addEventListener("keyup", (e) => {
-    keyElementMap[e.code].style.transform = "";
-    keyElementMap[e.code].style.background = "#000000";
-    keyElementMap[e.code].style.boxShadow = "";
+    if (e.code in keyElementMap) {
+        keyElementMap[e.code].classList.remove("active");
+        console.log(`${e.code} is released!`);
+    }
 });
