@@ -1,6 +1,11 @@
 const stackOutputContents = document.getElementById("stack-output-contents") as HTMLElement;
 const memoryOutputContents = document.getElementById("memory-output-contents") as HTMLElement;
 
+const memoryUpButton = document.getElementById("memory-up-button") as HTMLElement;
+const memoryDownButton = document.getElementById("memory-down-button") as HTMLElement;
+
+let currentMemoryStartIndex = 0;
+
 export function populateDisassemblerViews(memory: Uint8Array) {
     // Populate the stack view
     for (let i = 0; i < 16; ++i) {
@@ -9,30 +14,57 @@ export function populateDisassemblerViews(memory: Uint8Array) {
         `;
     }
 
-    // Populate Memory view
-    memoryOutputContents.innerHTML += `
+    // Memory view
+    // Display initial memory contents (0x000 - 0x03F)
+    displayMemoryContents(0, memory);
+
+    // Display memory dynamically
+    memoryUpButton.addEventListener("click", (e) => {
+        if (currentMemoryStartIndex < 0xFFF - 0x040) {
+            currentMemoryStartIndex += 0x040;
+            console.log(`0x${currentMemoryStartIndex.toString(16).padStart(3, "0")}`);
+            displayMemoryContents(currentMemoryStartIndex, memory);
+        }
+    });
+
+    memoryDownButton.addEventListener("click", (e) => {
+        if (currentMemoryStartIndex > 0x000) {
+            currentMemoryStartIndex -= 0x040;
+            console.log(`0x${currentMemoryStartIndex.toString(16).padStart(3, "0")}`);
+            displayMemoryContents(currentMemoryStartIndex, memory);
+        }
+    });
+}
+
+function displayMemoryContents(
+    startingIndex: number,
+    memory: Uint8Array
+) {
+    memoryOutputContents.innerHTML = `
         <pre class="memory-address">Address</pre>
     `;
 
     const memoryViewTotalColumns = 17;
+    const memoryViewRowLimit = 4;
     for (let i = 0; i < memoryViewTotalColumns - 1; ++i) {
         memoryOutputContents.innerHTML += `
             <pre class="memory-address">0x${i.toString(16).padStart(2, "0")}</pre>
         `;
     }
 
-    const memoryViewRowLimit = 4;
-    let memoryIndex = 0;
+    let msbByteIndex = startingIndex;  // Index of memory every 16-bit, so the first (msb) nibble and second nibble
+    let memoryIndex = startingIndex; // Current pointed index of memory
     for (let i = 0; i < memoryViewTotalColumns * memoryViewRowLimit; ++i) {
         if (i % (memoryViewTotalColumns) === 0) {
             memoryOutputContents.innerHTML += `
-               <pre class="memory-address">${memoryIndex.toString(16).padStart(3, "0")}</pre>
+               <pre class="memory-address">${msbByteIndex.toString(16).padStart(3, "0")}</pre>
             `;
-            memoryIndex += memoryViewTotalColumns - 1;
+            msbByteIndex += memoryViewTotalColumns - 1;
         } else {
             memoryOutputContents.innerHTML += `
-               <pre class="disassembler-content">00</pre>
+               <pre class="disassembler-content">${memory[memoryIndex].toString(16).padStart(2, "0")}</pre>
             `;
+            ++memoryIndex;
         }
     }
 }
