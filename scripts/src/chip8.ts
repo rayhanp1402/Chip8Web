@@ -2,42 +2,42 @@ import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT, ON_COLOR } from "./scree
 
 export class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
-    V = new Uint8Array(16);
+    private V = new Uint8Array(16);
     
     // Program Counter
-    PC = new Uint16Array(1);
+    private PC = new Uint16Array(1);
     
     // Index Register
-    I = new Uint16Array(1);
+    private I = new Uint16Array(1);
 
     // 16-level Stack
-    stack = new Uint16Array(16);
+    private stack = new Uint16Array(16);
     
     // Stack Pointer
-    SP = new Uint8Array(1);
+    private SP = new Uint8Array(1);
     
     // 4K bytes of memory
-    memory = new Uint8Array(4096);
+    private memory = new Uint8Array(4096);
     
     // Delay Timer
-    delay = new Uint8Array(1);
+    private delay = new Uint8Array(1);
     
     // Sound Timer
-    sound = new Uint8Array(1);
+    private sound = new Uint8Array(1);
 
     // Opcode
-    instruction = new Uint16Array(1);
+    private instruction = new Uint16Array(1);
 
     // Opcode separation based on pattern
-    firstNibble = new Uint8Array(1);    // First 4-bits (nibble)
-    X = new Uint8Array(1);              // Second nibble
-    Y = new Uint8Array(1);              // Third nibble
-    N = new Uint8Array(1);              // Fourth nibble
-    NN = new Uint8Array(1);             // Third and fourth nibbles
-    NNN = new Uint16Array(1);           // Second, third, and fourth nibbles
+    private firstNibble = new Uint8Array(1);    // First 4-bits (nibble)
+    private X = new Uint8Array(1);              // Second nibble
+    private Y = new Uint8Array(1);              // Third nibble
+    private N = new Uint8Array(1);              // Fourth nibble
+    private NN = new Uint8Array(1);             // Third and fourth nibbles
+    private NNN = new Uint16Array(1);           // Second, third, and fourth nibbles
 
     // Keypads, using KeyboardEvent codes
-    keyMap = {
+    private keyMap = {
         "Digit1": 0x1, "Digit2": 0x2, "Digit3": 0x3, "Digit4": 0xC,
         "KeyQ": 0x4, "KeyW": 0x5, "KeyE": 0x6, "KeyR": 0xD,
         "KeyA": 0x7, "KeyS": 0x8, "KeyD": 0x9, "KeyF": 0xE,
@@ -45,7 +45,7 @@ export class CHIP8 {
     };
 
     // Fonts
-    fontset = [
+    private fontset = [
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -65,10 +65,10 @@ export class CHIP8 {
     ];
 
     // Display representation
-    display = Array.from({ length: 32 }, () => Array(64).fill(0));
+    private display = Array.from({ length: 32 }, () => Array(64).fill(0));
 
     // ID for CPU cycle interval
-    runLoop: number | undefined;
+    private runLoop: number | undefined;
 
     constructor() {
         this.PC[0] = 0x200; // ROMs start at address 0x200
@@ -83,7 +83,11 @@ export class CHIP8 {
         }
     };
 
-    loadROM(romData: Uint8Array) {
+    public getMemory() {
+        return this.memory;
+    }
+
+    public loadROM(romData: Uint8Array) {
         this.PC[0] = 0x200; // Resets the PC
 
         if (romData.length > (4096 - 0x200)) {
@@ -96,14 +100,14 @@ export class CHIP8 {
         }
     };
 
-    fetch() {
+    private fetch() {
         // Gets two successive bytes in memory and concatenates them into a 2-bytes instruction
         this.instruction[0] = (this.memory[this.PC[0]] << 8) | (this.memory[this.PC[0] + 1]);
 
         this.PC[0] += 2;
     };
 
-    decode() {
+    private decode() {
         // Classify/separate the bits in the instruction
         this.firstNibble[0] = (this.instruction[0] & 0xF000) >> 12;
         this.X[0] = (this.instruction[0] & 0x0F00) >> 8;
@@ -113,7 +117,7 @@ export class CHIP8 {
         this.NNN[0] = (this.instruction[0] & 0x0FFF);
     };
 
-    execute() {
+    private execute() {
         switch(this.firstNibble[0]) {
             case 0x00:
                 switch(this.NNN[0]) {
@@ -166,7 +170,7 @@ export class CHIP8 {
         };
     };
 
-    cycle() {
+    private cycle() {
         if (this.PC[0] > 0xFFF) { 
             console.error("Program counter exceeded memory! Halting execution.");
             clearInterval(this.runLoop);
@@ -178,13 +182,13 @@ export class CHIP8 {
         this.execute();
     };
 
-    run() {
+    public run() {
         this.runLoop = setInterval(() => {
             this.cycle();
         }, 2);  // 500Hz
     };
 
-    clearScreen() {
+    private clearScreen() {
         if (!CONTEXT) {
             throw new Error("Context not found!");
         }
@@ -193,25 +197,25 @@ export class CHIP8 {
         CONTEXT.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
     };
 
-    jumpTo(address: Uint16Array) {
+    private jumpTo(address: Uint16Array) {
         this.PC[0] = address[0];
     };
 
-    loadRegister(registerOrder: Uint8Array, value: Uint8Array) {
+    private loadRegister(registerOrder: Uint8Array, value: Uint8Array) {
         // Loads 1-byte value to register Vx, where x is the register's order (0-F)
         this.V[registerOrder[0]] = value[0];
     };
 
-    addRegister(registerOrder: Uint8Array, value: Uint8Array) {
+    private addRegister(registerOrder: Uint8Array, value: Uint8Array) {
         // Adds 1-byte value to register Vx, where x is the register's order (0-F)
         this.V[registerOrder[0]] += value[0];
     };
 
-    loadIndex(address: Uint16Array) {
+    private loadIndex(address: Uint16Array) {
         this.I[0] = address[0];
     };
 
-    draw(xAxisRegister: Uint8Array, yAxisRegister: Uint8Array, height: Uint8Array) {
+    private draw(xAxisRegister: Uint8Array, yAxisRegister: Uint8Array, height: Uint8Array) {
         // Get X and Y coordinates from registers VX and VY respectively. Modulus to wrap them within screen bounds.
         const xAxis = this.V[xAxisRegister[0]] % PIXEL_WIDTH;
         const yAxis = this.V[yAxisRegister[0]] % PIXEL_HEIGHT;

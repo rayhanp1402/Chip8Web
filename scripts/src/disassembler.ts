@@ -22,7 +22,6 @@ export function populateDisassemblerViews(memory: Uint8Array) {
     memoryUpButton.addEventListener("click", (e) => {
         if (currentMemoryStartIndex < 0xFFF - 0x040) {
             currentMemoryStartIndex += 0x040;
-            console.log(`0x${currentMemoryStartIndex.toString(16).padStart(3, "0")}`);
             displayMemoryContents(currentMemoryStartIndex, memory);
         }
 
@@ -32,7 +31,6 @@ export function populateDisassemblerViews(memory: Uint8Array) {
     memoryDownButton.addEventListener("click", (e) => {
         if (currentMemoryStartIndex > 0x000) {
             currentMemoryStartIndex -= 0x040;
-            console.log(`0x${currentMemoryStartIndex.toString(16).padStart(3, "0")}`);
             displayMemoryContents(currentMemoryStartIndex, memory);
         }
 
