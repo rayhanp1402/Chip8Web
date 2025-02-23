@@ -32,6 +32,12 @@ body {
     text-transform: uppercase;
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 /* Ensure the button does not change when clicked */
 button:active, 
 .dropdown-toggle:active {

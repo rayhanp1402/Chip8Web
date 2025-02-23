@@ -1,8 +1,8 @@
 const stackOutputContents = document.getElementById("stack-output-contents") as HTMLElement;
 const memoryOutputContents = document.getElementById("memory-output-contents") as HTMLElement;
 
-const memoryUpButton = document.getElementById("memory-up-button") as HTMLElement;
-const memoryDownButton = document.getElementById("memory-down-button") as HTMLElement;
+const memoryUpButton = document.getElementById("memory-up-button") as HTMLButtonElement;
+const memoryDownButton = document.getElementById("memory-down-button") as HTMLButtonElement;
 
 let currentMemoryStartIndex = 0;
 
@@ -25,6 +25,8 @@ export function populateDisassemblerViews(memory: Uint8Array) {
             console.log(`0x${currentMemoryStartIndex.toString(16).padStart(3, "0")}`);
             displayMemoryContents(currentMemoryStartIndex, memory);
         }
+
+        updateButtonStates();
     });
 
     memoryDownButton.addEventListener("click", (e) => {
@@ -33,6 +35,8 @@ export function populateDisassemblerViews(memory: Uint8Array) {
             console.log(`0x${currentMemoryStartIndex.toString(16).padStart(3, "0")}`);
             displayMemoryContents(currentMemoryStartIndex, memory);
         }
+
+        updateButtonStates();
     });
 }
 
@@ -67,4 +71,11 @@ function displayMemoryContents(
             ++memoryIndex;
         }
     }
+}
+
+function updateButtonStates() {
+    // This will disable or enable the memory up and memory down buttons
+    // According to limit
+    memoryUpButton.disabled = currentMemoryStartIndex >= 0xFFF - 0x040;
+    memoryDownButton.disabled = currentMemoryStartIndex <= 0x000;
 }
