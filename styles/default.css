@@ -133,3 +133,72 @@ button:active,
     background: #00CC29;
     box-shadow: 0px 0px 5px rgba(0, 255, 51, 0.5);
 }
+
+/* Disassembler Accordion Styling */
+.accordion-item {
+    background: #000000;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.accordion-button {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: none;
+    text-transform: uppercase;
+}
+
+.accordion-button:focus,
+.accordion-button:not(.collapsed) {
+    background: #00FF33;
+    color: #000000;
+    box-shadow: 0 0 10px rgba(0, 255, 51, 0.8);
+}
+
+.accordion-collapse {
+    background: #000000;
+}
+
+/* Disassembler Output */
+.current-instruction-output {
+    background: #111; /* Darker black for contrast */
+    color: #00FF33;
+    font-family: 'Silkscreen', monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    max-height: 300px; /* Prevents overflow */
+    overflow-y: auto;
+}
+
+/* Ensuring preformatted text doesn't overflow */
+pre.disassembler-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+.disassembler-container {
+    display: flex;
+}
+
+#registersAccordion {
+    margin-left: 10px;
+}
+
+.registers-output {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    color: white;
+    gap: 20px; /* Space between items */
+    text-align: left;
+    font-family: monospace;
+}
+
+#specialRegistersAccordion {
+    margin-left: 10px;
+}
