@@ -184,21 +184,29 @@ pre.disassembler-content {
 
 .disassembler-container {
     display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 1000px;
 }
 
-#registersAccordion {
-    margin-left: 10px;
+.disassembler-container > * {
+    flex: 1 1 auto; /* Allow flexible sizing */
+    min-width: 120px; /* Ensure items don't get too small */
 }
 
-.registers-output {
+.special-registers-output {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns */
     color: white;
-    gap: 20px; /* Space between items */
+    gap: 20px;
     text-align: left;
     font-family: monospace;
 }
 
-#specialRegistersAccordion {
-    margin-left: 10px;
+.registers-and-stack-output {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    color: white;
+    gap: 20px;
+    text-align: left;
+    font-family: monospace;
 }

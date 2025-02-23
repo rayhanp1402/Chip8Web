@@ -53,23 +53,6 @@
         </div>
 
         <div class="disassembler-container">
-            <div class="accordion mt-3" id="instructionAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingInstruction">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstruction">
-                            Instruction
-                        </button>
-                    </h2>
-                    <div id="collapseInstruction" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <div class="current-instruction-output">
-                                <pre class="disassembler-content">255: 0X00E0 CLS</pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="accordion mt-3" id="registersAccordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingRegisters">
@@ -79,7 +62,7 @@
                     </h2>
                     <div id="collapseRegisters" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <div class="registers-output">
+                            <div class="registers-and-stack-output">
                                 <pre class="disassembler-content">V0: 0x50</pre>
                                 <pre class="disassembler-content">V1: 0x50</pre>
                                 <pre class="disassembler-content">V2: 0x50</pre>
@@ -111,10 +94,58 @@
                     </h2>
                     <div id="collapseSpecialRegisters" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <div class="registers-output">
+                            <div class="special-registers-output">
                                 <pre class="disassembler-content">PC: 0x50</pre>
                                 <pre class="disassembler-content">SP: 0x50</pre>
                                 <pre class="disassembler-content">Index: 0x50</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion mt-3" id="stackAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingStack">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStack">
+                            Stack
+                        </button>
+                    </h2>
+                    <div id="collapseStack" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="registers-and-stack-output">
+                                <pre class="disassembler-content">0: 0x200</pre>
+                                <pre class="disassembler-content">1: 0x220</pre>
+                                <pre class="disassembler-content">3: 0x250</pre>
+                                <pre class="disassembler-content">4: 0x250</pre>
+                                <pre class="disassembler-content">5: 0x250</pre>
+                                <pre class="disassembler-content">6: 0x250</pre>
+                                <pre class="disassembler-content">7: 0x250</pre>
+                                <pre class="disassembler-content">8: 0x250</pre>
+                                <pre class="disassembler-content">9: 0x250</pre>
+                                <pre class="disassembler-content">10: 0x250</pre>
+                                <pre class="disassembler-content">11: 0x250</pre>
+                                <pre class="disassembler-content">12: 0x250</pre>
+                                <pre class="disassembler-content">13: 0x250</pre>
+                                <pre class="disassembler-content">14: 0x250</pre>
+                                <pre class="disassembler-content">15: 0x250</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion mt-3" id="instructionAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingInstruction">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstruction">
+                            Instruction
+                        </button>
+                    </h2>
+                    <div id="collapseInstruction" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="current-instruction-output">
+                                <pre class="disassembler-content">255: 0X00E0 CLS</pre>
                             </div>
                         </div>
                     </div>
