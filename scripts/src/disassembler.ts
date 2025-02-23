@@ -7,7 +7,7 @@ const memoryDownButton = document.getElementById("memory-down-button") as HTMLBu
 let currentMemoryStartIndex = 0;
 
 export function populateDisassemblerViews(memory: Uint8Array) {
-    // Populate the stack view
+    // Inititalize the stack view
     for (let i = 0; i < 16; ++i) {
         stackOutputContents.innerHTML += `
             <pre class="disassembler-content" id="stack-content-${i}">${i}: 0x00</pre>
@@ -25,7 +25,7 @@ export function populateDisassemblerViews(memory: Uint8Array) {
             displayMemoryContents(currentMemoryStartIndex, memory);
         }
 
-        updateButtonStates();
+        updateMemoryButtonStates();
     });
 
     memoryDownButton.addEventListener("click", (e) => {
@@ -34,7 +34,7 @@ export function populateDisassemblerViews(memory: Uint8Array) {
             displayMemoryContents(currentMemoryStartIndex, memory);
         }
 
-        updateButtonStates();
+        updateMemoryButtonStates();
     });
 }
 
@@ -71,7 +71,7 @@ function displayMemoryContents(
     }
 }
 
-function updateButtonStates() {
+function updateMemoryButtonStates() {
     // This will disable or enable the memory up and memory down buttons
     // According to limit
     memoryUpButton.disabled = currentMemoryStartIndex >= 0xFFF - 0x040;
