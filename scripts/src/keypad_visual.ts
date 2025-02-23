@@ -23,7 +23,6 @@ const keyElementMap: Record<string, HTMLElement> = {
 document.addEventListener("keydown", (e) => {
     if (e.code in keyElementMap) {
         keyElementMap[e.code].classList.add("active");
-        console.log(`${e.code} is pressed!`);
     }
 });
 
@@ -31,6 +30,5 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
     if (e.code in keyElementMap) {
         keyElementMap[e.code].classList.remove("active");
-        console.log(`${e.code} is released!`);
     }
 });
