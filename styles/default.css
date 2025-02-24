@@ -338,3 +338,19 @@ pre.memory-address {
 .cycle-btn:hover {
     color: #ffffff;
 }
+
+.terminal-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+.terminal-output {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; /* Enables horizontal scrolling if needed */
+    background-color: black;
+    color: lime;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: monospace;
+}
