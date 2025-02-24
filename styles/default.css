@@ -279,3 +279,62 @@ pre.memory-address {
     background-color: red; /* Default: Unloaded */
     transition: background-color 0.3s ease-in-out;
 }
+
+.cycle-setter-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 13px;
+    color: #00FF33;
+    background: #000;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    padding: 0cm 8px;
+    margin-top: 10px;
+}
+
+.cycle-label {
+    margin-right: 4px;
+}
+
+.cycle-value-container {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+#cycle-value {
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.cycle-unit {
+    font-size: 13px;
+    color: #00FF33;
+    margin-left: 3px;
+}
+
+.cycle-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.cycle-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 7px;
+    background: none;
+    color: #00FF33;
+    border: none;
+    cursor: pointer;
+    padding: 0px;
+    width: 14px;
+    text-align: center;
+}
+
+
+.cycle-btn:hover {
+    color: #ffffff;
+}
