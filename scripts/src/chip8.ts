@@ -282,12 +282,12 @@ export class CHIP8 {
         this.execute();
     };
 
-    public run() {
-        this.stop();
+    public run(timeout: number = 2) { // Default 500Hz (2ms)
+        this.stop(); // Ensure no duplicate intervals
         this.runLoop = setInterval(() => {
             this.cycle();
-        }, 2);  // 500Hz
-    };
+        }, timeout);
+    }
 
     public stop() {
         if (this.runLoop) {
@@ -295,6 +295,15 @@ export class CHIP8 {
             this.runLoop = null;  // Prevent accidental re-clearing
             console.log("Execution stopped.");
         }
+    }
+
+    public changeSpeed(newTimeout: number) {
+        if (!this.runLoop) return;  // Do nothing if not running
+    
+        clearInterval(this.runLoop);  // Stop current interval
+        this.runLoop = setInterval(() => {
+            this.cycle();
+        }, newTimeout);
     }
 
     private clearScreen() {
