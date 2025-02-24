@@ -7,6 +7,8 @@ const memoryUpButton = document.getElementById("memory-up-button") as HTMLButton
 const memoryDownButton = document.getElementById("memory-down-button") as HTMLButtonElement;
 
 const pcContentView = document.getElementById("pc-content-view") as HTMLElement;
+const spContentView = document.getElementById("sp-content-view") as HTMLElement;
+const indexContentView = document.getElementById("index-content-view") as HTMLElement;
 
 export class Disassembler {
     private currentMemoryStartIndex = 0;
@@ -43,15 +45,25 @@ export class Disassembler {
         });
 
         // Subscribe to CHIP8 class object to dynamically change the disassembler contents
-        this.subscribeToChip8PC(chip8);
+        this.subscribeToChip8(chip8);
     }
 
-    private subscribeToChip8PC(chip8: CHIP8) {
+    private subscribeToChip8(chip8: CHIP8) {
         chip8.listenToPC(this.updatePCView);
+        chip8.listenToSP(this.updateSPView);
+        chip8.listenToIndex(this.updateIndexView);
     }
 
     private updatePCView(PC: number) {
         pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(3, "0")}`;
+    }
+
+    private updateSPView(PC: number) {
+        spContentView.innerText = `SP: 0x${PC.toString(16).padStart(2, "0")}`;
+    }
+
+    private updateIndexView(PC: number) {
+        indexContentView.innerText = `Index: 0x${PC.toString(16).padStart(3, "0")}`;
     }
     
     private displayMemoryContents(
