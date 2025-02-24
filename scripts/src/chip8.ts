@@ -70,13 +70,12 @@ export class CHIP8 {
     // ID for CPU cycle interval
     private runLoop: number | undefined;
 
-    // PC, SP, and Index Register listeners
+    // Listeners to update of CHIP8 registers and memory
     private pcListeners: ((PC: number) => void)[] = [];
     private spListeners: ((SP: number) =>void)[] = [];
     private indexListeners: ((I: number) =>void)[] = [];
-
-    // 16-registers listeners
     private vListeners: ((V: Uint8Array) => void)[] = [];
+    private stackListeners: ((stack: Uint16Array) => void)[] = [];
 
     constructor() {
         this.assignToPC(0x200); // ROMs start at address 0x200
@@ -103,8 +102,12 @@ export class CHIP8 {
         this.indexListeners.push(listener);
     }
 
-    public listernToV(listener: ((V: Uint8Array) => void)) {
+    public listenToV(listener: ((V: Uint8Array) => void)) {
         this.vListeners.push(listener);
+    }
+
+    public listenToStack(listener: ((Stack: Uint16Array) => void)) {
+        this.stackListeners.push(listener);
     }
 
     private notifyPCListeners() {
@@ -128,6 +131,12 @@ export class CHIP8 {
     private notifyVListeners() {
         for (let listener of this.vListeners) {
             listener(this.V);
+        }
+    }
+
+    private notifyStackListeners() {
+        for (let listener of this.stackListeners) {
+            listener(this.stack);
         }
     }
 

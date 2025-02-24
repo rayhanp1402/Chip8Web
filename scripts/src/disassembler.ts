@@ -12,6 +12,8 @@ const indexContentView = document.getElementById("index-content-view") as HTMLEl
 
 const vRegistersContentView = document.getElementsByClassName("v-registers") as HTMLCollectionOf<Element>;
 
+const stackContentView = document.getElementsByClassName("stack-elements") as HTMLCollectionOf<Element>;
+
 export class Disassembler {
     private currentMemoryStartIndex = 0;
 
@@ -19,7 +21,7 @@ export class Disassembler {
         // Inititalize the stack view
         for (let i = 0; i < 16; ++i) {
             stackOutputContents.innerHTML += `
-                <pre class="disassembler-content" id="stack-content-${i}">${i}: 0x00</pre>
+                <pre class="disassembler-content stack-elements">${i}: 0x0000</pre>
             `;
         }
     
@@ -46,7 +48,7 @@ export class Disassembler {
             this.updateMemoryButtonStates();
         });
 
-        // Subscribe to CHIP8 class object to dynamically change the disassembler contents
+        // Subscribe/listen to CHIP8 class object to dynamically change the disassembler contents
         this.subscribeToChip8(chip8);
     }
 
@@ -54,11 +56,12 @@ export class Disassembler {
         chip8.listenToPC(this.updatePCView);
         chip8.listenToSP(this.updateSPView);
         chip8.listenToIndex(this.updateIndexView);
-        chip8.listernToV(this.updateVRegisterView);
+        chip8.listenToV(this.updateVRegisterView);
+        chip8.listenToStack(this.updateStackView);
     }
 
     private updatePCView(PC: number) {
-        pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(3, "0").toUpperCase()}`;
+        pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(4, "0").toUpperCase()}`;
     }
 
     private updateSPView(PC: number) {
@@ -66,13 +69,20 @@ export class Disassembler {
     }
 
     private updateIndexView(PC: number) {
-        indexContentView.innerText = `Index: 0x${PC.toString(16).padStart(3, "0").toUpperCase()}`;
+        indexContentView.innerText = `Index: 0x${PC.toString(16).padStart(4, "0").toUpperCase()}`;
     }
 
     private updateVRegisterView(V: Uint8Array) {
         for (let i = 0; i < 16; ++i) {
             vRegistersContentView[i]
             .innerHTML = `V${i.toString(16).toUpperCase()}: 0x${V[i].toString(16).padStart(2, "0").toUpperCase()}`;
+        }
+    }
+
+    private updateStackView(stack: Uint16Array) {
+        for (let i = 0; i < 16; ++i) {
+            stackContentView[i]
+            .innerHTML = `${i}: 0x${stack[i].toString(16).padStart(4, "0").toUpperCase()}`;
         }
     }
     
