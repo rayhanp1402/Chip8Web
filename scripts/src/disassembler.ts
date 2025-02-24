@@ -1,13 +1,17 @@
+import { CHIP8 } from "./chip8";
+
 const stackOutputContents = document.getElementById("stack-output-contents") as HTMLElement;
 const memoryOutputContents = document.getElementById("memory-output-contents") as HTMLElement;
 
 const memoryUpButton = document.getElementById("memory-up-button") as HTMLButtonElement;
 const memoryDownButton = document.getElementById("memory-down-button") as HTMLButtonElement;
 
+const pcContentView = document.getElementById("pc-content-view") as HTMLElement;
+
 export class Disassembler {
     private currentMemoryStartIndex = 0;
 
-    constructor(memory: Uint8Array) {
+    constructor(chip8: CHIP8) {
         // Inititalize the stack view
         for (let i = 0; i < 16; ++i) {
             stackOutputContents.innerHTML += `
@@ -17,13 +21,13 @@ export class Disassembler {
     
         // Memory view
         // Display initial memory contents (0x000 - 0x03F)
-        this.displayMemoryContents(0, memory);
+        this.displayMemoryContents(0, chip8.getMemory());
     
         // Display memory dynamically
         memoryUpButton.addEventListener("click", (e) => {
             if (this.currentMemoryStartIndex < 0xFFF - 0x040) {
                 this.currentMemoryStartIndex += 0x040;
-                this.displayMemoryContents(this.currentMemoryStartIndex, memory);
+                this.displayMemoryContents(this.currentMemoryStartIndex, chip8.getMemory());
             }
     
             this.updateMemoryButtonStates();
@@ -32,11 +36,22 @@ export class Disassembler {
         memoryDownButton.addEventListener("click", (e) => {
             if (this.currentMemoryStartIndex > 0x000) {
                 this.currentMemoryStartIndex -= 0x040;
-                this.displayMemoryContents(this.currentMemoryStartIndex, memory);
+                this.displayMemoryContents(this.currentMemoryStartIndex, chip8.getMemory());
             }
     
             this.updateMemoryButtonStates();
         });
+
+        // Subscribe to CHIP8 class object to dynamically change the disassembler contents
+        this.subscribeToChip8PC(chip8);
+    }
+
+    private subscribeToChip8PC(chip8: CHIP8) {
+        chip8.listenToPC(this.updatePCView);
+    }
+
+    private updatePCView(PC: number) {
+        pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(3, "0")}`;
     }
     
     private displayMemoryContents(

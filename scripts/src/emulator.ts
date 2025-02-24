@@ -8,7 +8,7 @@ fetch("signed_url")
         chip8.loadROM(new Uint8Array(buffer));
         console.log("ROM loaded successfully!");
 
-        const disassembler = new Disassembler(chip8.getMemory());
+        const disassembler = new Disassembler(chip8);
         chip8.run();
     })  
     .catch(error => console.error("Error loading ROM:", error));

@@ -88,15 +88,15 @@ export class CHIP8 {
         }
     };
 
-    public subscribeToPC(listener: (PC: number) => void) {
+    public listenToPC(listener: (PC: number) => void) {
         this.pcListeners.push(listener);
     }
 
-    public subscribeToSP(listener: (SP: number) => void) {
+    public listenToSP(listener: (SP: number) => void) {
         this.spListeners.push(listener);
     }
 
-    public subscribeToIndex(listener: (I: number) => void) {
+    public listenToIndex(listener: (I: number) => void) {
         this.indexListeners.push(listener);
     }
 
