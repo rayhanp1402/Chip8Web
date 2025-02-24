@@ -29,7 +29,7 @@ export class Disassembler {
         // Display initial memory contents (0x000 - 0x03F)
         this.displayMemoryContents(0, chip8.getMemory());
     
-        // Display memory dynamically
+        // Display memory dynamically using up and down button
         memoryUpButton.addEventListener("click", (e) => {
             if (this.currentMemoryStartIndex < 0xFFF - 0x040) {
                 this.currentMemoryStartIndex += 0x040;
@@ -58,6 +58,7 @@ export class Disassembler {
         chip8.listenToIndex(this.updateIndexView);
         chip8.listenToV(this.updateVRegisterView);
         chip8.listenToStack(this.updateStackView);
+        chip8.listenToMemory(this.updateMemoryView);
     }
 
     private updatePCView(PC: number) {
@@ -83,6 +84,13 @@ export class Disassembler {
         for (let i = 0; i < 16; ++i) {
             stackContentView[i]
             .innerHTML = `${i}: 0x${stack[i].toString(16).padStart(4, "0").toUpperCase()}`;
+        }
+    }
+
+    private updateMemoryView(memory: Uint8Array, updatedAtIndex: number) {
+        // Only change the currently displayed memory contents in the memory view
+        if (updatedAtIndex >= this.currentMemoryStartIndex && updatedAtIndex < this.currentMemoryStartIndex + 0x40) {
+            this.displayMemoryContents(this.currentMemoryStartIndex, memory);
         }
     }
     

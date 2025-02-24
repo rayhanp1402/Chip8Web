@@ -76,6 +76,7 @@ export class CHIP8 {
     private indexListeners: ((I: number) =>void)[] = [];
     private vListeners: ((V: Uint8Array) => void)[] = [];
     private stackListeners: ((stack: Uint16Array) => void)[] = [];
+    private memoryListeners: ((memory: Uint8Array, updatedAtIndex: number) => void)[] = [];
 
     constructor() {
         this.assignToPC(0x200); // ROMs start at address 0x200
@@ -86,7 +87,7 @@ export class CHIP8 {
 
         // Loads the fonts into memory
         for (let i = 0; i < fontsetSize; ++i) {
-            this.memory[fontsetStartAddress + i] = this.fontset[i];
+            this.assignToMemory(fontsetStartAddress + i, this.fontset[i]);
         }
     };
 
@@ -108,6 +109,10 @@ export class CHIP8 {
 
     public listenToStack(listener: ((Stack: Uint16Array) => void)) {
         this.stackListeners.push(listener);
+    }
+
+    public listenToMemory(listener: ((memory: Uint8Array, updatedAtIndex: number) => void)) {
+        this.memoryListeners.push(listener);
     }
 
     private notifyPCListeners() {
@@ -137,6 +142,12 @@ export class CHIP8 {
     private notifyStackListeners() {
         for (let listener of this.stackListeners) {
             listener(this.stack);
+        }
+    }
+
+    private notifyMemoryListeners(index: number) {
+        for (let listener of this.memoryListeners) {
+            listener(this.memory, index);
         }
     }
 
@@ -171,6 +182,11 @@ export class CHIP8 {
         this.notifyVListeners();
     }
 
+    private assignToMemory(index: number, value: number) {
+        this.memory[index] = value;
+        this.notifyMemoryListeners(index);
+    }
+
     public loadROM(romData: Uint8Array) {
         this.assignToPC(0x200); // Resets the PC
 
@@ -180,7 +196,7 @@ export class CHIP8 {
 
         // Loads ROM bytes into memory
         for (let i = 0; i < romData.length; i++) {
-            this.memory[0x200 + i] = romData[i];
+            this.assignToMemory(0x200 + i, romData[i]);
         }
     };
 
