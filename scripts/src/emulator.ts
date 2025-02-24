@@ -4,6 +4,9 @@ import { Disassembler } from "./disassembler.js";
 const romIndicatorLight = document.getElementById("rom-indicator") as HTMLElement;
 const romStatusText = document.getElementById("rom-status-text") as HTMLElement;
 
+const playButton = document.getElementById("play-button") as HTMLElement;
+const stopButton = document.getElementById("stop-button") as HTMLElement;
+
 fetch("signed_url")
     .then(response => {
         if (!response.ok) {
@@ -19,7 +22,9 @@ fetch("signed_url")
         romStatusText.innerText = `Loaded 'IBM Logo.ch8' ROM`;
 
         const disassembler = new Disassembler(chip8);
-        chip8.run();
+        
+        playButton.addEventListener("click", (e) => chip8.run());
+        stopButton.addEventListener("click", (e) => chip8.stop());
     })  
     .catch(error => {
         console.error("Error loading ROM:", error)

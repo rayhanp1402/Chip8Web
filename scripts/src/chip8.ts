@@ -68,7 +68,7 @@ export class CHIP8 {
     private display = Array.from({ length: 32 }, () => Array(64).fill(0));
 
     // ID for CPU cycle interval
-    private runLoop: number | undefined;
+    private runLoop: number | null = null;
 
     // Listeners to update of CHIP8 registers and memory
     private pcListeners: ((PC: number) => void)[] = [];
@@ -273,7 +273,7 @@ export class CHIP8 {
     private cycle() {
         if (this.PC[0] > 0xFFF) { 
             console.error("Program counter exceeded memory! Halting execution.");
-            clearInterval(this.runLoop);
+            this.stop();
             return;
         }
 
@@ -283,10 +283,19 @@ export class CHIP8 {
     };
 
     public run() {
+        this.stop();
         this.runLoop = setInterval(() => {
             this.cycle();
         }, 2);  // 500Hz
     };
+
+    public stop() {
+        if (this.runLoop) {
+            clearInterval(this.runLoop);
+            this.runLoop = null;  // Prevent accidental re-clearing
+            console.log("Execution stopped.");
+        }
+    }
 
     private clearScreen() {
         if (!CONTEXT) {
