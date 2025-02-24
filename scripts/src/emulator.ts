@@ -31,19 +31,36 @@ fetch("signed_url")
 
         cycleUpButton.addEventListener("click", (e) => {
             cycleFrequency += 10;
+            if (cycleFrequency >= 1000) {
+                cycleFrequency = 1000;
+            }
+
             cycleValueText.innerText = `${cycleFrequency}`;
             chip8.changeSpeed(1000 / cycleFrequency);
+            updateCycleButtonStates();
+            });
+
+            cycleDownButton.addEventListener("click", (e) => {
+                cycleFrequency -= 10;
+                if (cycleFrequency <= 0) {
+                    cycleFrequency = 1;
+                }
+
+                cycleValueText.innerText = `${cycleFrequency}`;
+                chip8.changeSpeed(1000 / cycleFrequency);
+                updateCycleButtonStates();
+            });
+            
+            playButton.addEventListener("click", (e) => chip8.run(1000 / cycleFrequency));
+            stopButton.addEventListener("click", (e) => chip8.stop());
+        })  
+        .catch(error => {
+            console.error("Error loading ROM:", error)
         });
 
-        cycleDownButton.addEventListener("click", (e) => {
-            cycleFrequency -= 10;
-            cycleValueText.innerText = `${cycleFrequency}`;
-            chip8.changeSpeed(1000 / cycleFrequency);
-        });
-        
-        playButton.addEventListener("click", (e) => chip8.run(1000 / cycleFrequency));
-        stopButton.addEventListener("click", (e) => chip8.stop());
-    })  
-    .catch(error => {
-        console.error("Error loading ROM:", error)
-    });
+    function updateCycleButtonStates() {
+        // This will disable or enable the memory up and memory down buttons
+        // According to limit
+        cycleUpButton.disabled = cycleFrequency >= 1000;    // Upper limit 1000 Hz
+        cycleDownButton.disabled = cycleFrequency <= 1;     // Lower limit 1 Hz
+    }
