@@ -10,6 +10,8 @@ const pcContentView = document.getElementById("pc-content-view") as HTMLElement;
 const spContentView = document.getElementById("sp-content-view") as HTMLElement;
 const indexContentView = document.getElementById("index-content-view") as HTMLElement;
 
+const vRegistersContentView = document.getElementsByClassName("v-registers") as HTMLCollectionOf<Element>;
+
 export class Disassembler {
     private currentMemoryStartIndex = 0;
 
@@ -52,18 +54,26 @@ export class Disassembler {
         chip8.listenToPC(this.updatePCView);
         chip8.listenToSP(this.updateSPView);
         chip8.listenToIndex(this.updateIndexView);
+        chip8.listernToV(this.updateVRegisterView);
     }
 
     private updatePCView(PC: number) {
-        pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(3, "0")}`;
+        pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(3, "0").toUpperCase()}`;
     }
 
     private updateSPView(PC: number) {
-        spContentView.innerText = `SP: 0x${PC.toString(16).padStart(2, "0")}`;
+        spContentView.innerText = `SP: 0x${PC.toString(16).padStart(2, "0").toUpperCase()}`;
     }
 
     private updateIndexView(PC: number) {
-        indexContentView.innerText = `Index: 0x${PC.toString(16).padStart(3, "0")}`;
+        indexContentView.innerText = `Index: 0x${PC.toString(16).padStart(3, "0").toUpperCase()}`;
+    }
+
+    private updateVRegisterView(V: Uint8Array) {
+        for (let i = 0; i < 16; ++i) {
+            vRegistersContentView[i]
+            .innerHTML = `V${i.toString(16).toUpperCase()}: 0x${V[i].toString(16).padStart(2, "0").toUpperCase()}`;
+        }
     }
     
     private displayMemoryContents(
@@ -78,7 +88,7 @@ export class Disassembler {
         const memoryViewRowLimit = 4;
         for (let i = 0; i < memoryViewTotalColumns - 1; ++i) {
             memoryOutputContents.innerHTML += `
-                <pre class="memory-address">0x${i.toString(16).padStart(2, "0")}</pre>
+                <pre class="memory-address">0x${i.toString(16).padStart(2, "0").toUpperCase()}</pre>
             `;
         }
     
@@ -87,12 +97,12 @@ export class Disassembler {
         for (let i = 0; i < memoryViewTotalColumns * memoryViewRowLimit; ++i) {
             if (i % (memoryViewTotalColumns) === 0) {
                 memoryOutputContents.innerHTML += `
-                   <pre class="memory-address">${msbByteIndex.toString(16).padStart(3, "0")}</pre>
+                   <pre class="memory-address">${msbByteIndex.toString(16).padStart(3, "0").toUpperCase()}</pre>
                 `;
                 msbByteIndex += memoryViewTotalColumns - 1;
             } else {
                 memoryOutputContents.innerHTML += `
-                   <pre class="disassembler-content">${memory[memoryIndex].toString(16).padStart(2, "0")}</pre>
+                   <pre class="disassembler-content">${memory[memoryIndex].toString(16).padStart(2, "0").toUpperCase()}</pre>
                 `;
                 ++memoryIndex;
             }

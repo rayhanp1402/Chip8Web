@@ -75,6 +75,9 @@ export class CHIP8 {
     private spListeners: ((SP: number) =>void)[] = [];
     private indexListeners: ((I: number) =>void)[] = [];
 
+    // 16-registers listeners
+    private vListeners: ((V: Uint8Array) => void)[] = [];
+
     constructor() {
         this.assignToPC(0x200); // ROMs start at address 0x200
 
@@ -100,6 +103,10 @@ export class CHIP8 {
         this.indexListeners.push(listener);
     }
 
+    public listernToV(listener: ((V: Uint8Array) => void)) {
+        this.vListeners.push(listener);
+    }
+
     private notifyPCListeners() {
         for (let listener of this.pcListeners) {
             listener(this.PC[0]);
@@ -115,6 +122,12 @@ export class CHIP8 {
     private notifyIndexListeners() {
         for (let listener of this.indexListeners) {
             listener(this.PC[0]);
+        }
+    }
+
+    private notifyVListeners() {
+        for (let listener of this.vListeners) {
+            listener(this.V);
         }
     }
 
@@ -135,6 +148,18 @@ export class CHIP8 {
     private assignToIndex(value: number) {
         this.I[0] = value;
         this.notifyIndexListeners();
+    }
+
+    private assignToV(order: number, value: number) {
+        // Order means the V registers index/number (0-F or 0-15)
+        this.V[order] = value;
+        this.notifyVListeners();
+    }
+
+    private addToV(order: number, value: number) {
+        // Order means the V registers index/number (0-F or 0-15)
+        this.V[order] += value;
+        this.notifyVListeners();
     }
 
     public loadROM(romData: Uint8Array) {
@@ -253,12 +278,12 @@ export class CHIP8 {
 
     private loadRegister(registerOrder: Uint8Array, value: Uint8Array) {
         // Loads 1-byte value to register Vx, where x is the register's order (0-F)
-        this.V[registerOrder[0]] = value[0];
+        this.assignToV(registerOrder[0], value[0]);
     };
 
     private addRegister(registerOrder: Uint8Array, value: Uint8Array) {
         // Adds 1-byte value to register Vx, where x is the register's order (0-F)
-        this.V[registerOrder[0]] += value[0];
+        this.addToV(registerOrder[0], value[0]);
     };
 
     private loadIndex(address: Uint16Array) {
@@ -272,7 +297,7 @@ export class CHIP8 {
 
         // Reset collision flag (V[0xF] is used to indicate collision)
         // Collision is when a sprite is drawn into an 'active/on' display, which 'deactivate' the display
-        this.V[0xF] = 0;
+        this.assignToV(0xF, 0);
 
         let spriteByte = new Uint8Array(1);
         let spritePixel = new Uint8Array(1); // Sprite bit that will be extracted from spriteByte
@@ -295,7 +320,7 @@ export class CHIP8 {
                     const y = (yAxis + row) % PIXEL_HEIGHT;
 
                     if (this.display[y][x] === 1) { // Collision found
-                        this.V[0xF] = 1;
+                        this.assignToV(0xF, 1);
                     }
 
                     this.display[y][x] ^= 1;
