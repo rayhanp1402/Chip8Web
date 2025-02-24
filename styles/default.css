@@ -181,6 +181,15 @@ button:active,
     overflow-y: auto;
 }
 
+.instruction-output {
+    display: grid;
+    color: white;
+    margin-top: 12px;
+    gap: 10px;
+    text-align: left;
+    font-family: monospace;
+}
+
 /* Ensuring preformatted text doesn't overflow */
 pre.disassembler-content {
     white-space: pre-wrap;
@@ -384,4 +393,35 @@ pre.memory-address {
     transform: scale(0.9);
     background: #00CC29;
     box-shadow: 0px 0px 5px rgba(0, 255, 51, 0.5);
+}
+
+.instruction-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.instruction-btn:hover {
+    background: #00FF33;
+    color: #000000;
+    box-shadow: 0px 0px 10px rgba(0, 255, 51, 0.8);
+}
+
+.instruction-btn:active {
+    transform: scale(0.9);
+    background: #00CC29;
+    box-shadow: 0px 0px 5px rgba(0, 255, 51, 0.5);
+}
+
+.instruction-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
