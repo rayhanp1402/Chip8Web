@@ -14,7 +14,11 @@
             <span class="indicator" id="rom-indicator"></span>
             <span id="rom-status-text">Unloaded ROM</span>
         </div>
-        
+
+        <div class="emulator-controls mb-3 d-flex gap-2">
+            <button id="play-button" class="btn btn-primary">Play</button>
+            <button id="stop-button" class="btn btn-danger">Stop</button>
+        </div>        
 
         <div class="peripheral-container">
             <canvas id="screen"></canvas>
@@ -70,7 +74,7 @@
             </div>
         </div>
 
-        <div class="disassembler-container">
+        <div class="disassembler-container mt-3">
             <div class="accordion mt-3" id="registersAccordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingRegisters">
