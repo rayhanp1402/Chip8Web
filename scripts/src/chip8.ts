@@ -70,8 +70,13 @@ export class CHIP8 {
     // ID for CPU cycle interval
     private runLoop: number | undefined;
 
+    // PC, SP, and Index Register listeners
+    private pcListeners: ((PC: number) => void)[] = [];
+    private spListeners: ((SP: number) =>void)[] = [];
+    private indexListeners: ((I: number) =>void)[] = [];
+
     constructor() {
-        this.PC[0] = 0x200; // ROMs start at address 0x200
+        this.assignToPC(0x200); // ROMs start at address 0x200
 
         // Fonts stored in addresses 0x050-0x0A0
         const fontsetSize = 80;
@@ -83,12 +88,57 @@ export class CHIP8 {
         }
     };
 
+    public subscribeToPC(listener: (PC: number) => void) {
+        this.pcListeners.push(listener);
+    }
+
+    public subscribeToSP(listener: (SP: number) => void) {
+        this.spListeners.push(listener);
+    }
+
+    public subscribeToIndex(listener: (I: number) => void) {
+        this.indexListeners.push(listener);
+    }
+
+    private notifyPCListeners() {
+        for (let listener of this.pcListeners) {
+            listener(this.PC[0]);
+        }
+    }
+
+    private notifySPListeners() {
+        for (let listener of this.spListeners) {
+            listener(this.PC[0]);
+        }
+    }
+
+    private notifyIndexListeners() {
+        for (let listener of this.indexListeners) {
+            listener(this.PC[0]);
+        }
+    }
+
     public getMemory() {
         return this.memory;
     }
 
+    private addToPC(value: number) {
+        this.PC[0] += value;
+        this.notifyPCListeners();
+    }
+
+    private assignToPC(value: number) {
+        this.PC[0] = value;
+        this.notifyPCListeners();
+    }
+
+    private assignToIndex(value: number) {
+        this.I[0] = value;
+        this.notifyIndexListeners();
+    }
+
     public loadROM(romData: Uint8Array) {
-        this.PC[0] = 0x200; // Resets the PC
+        this.assignToPC(0x200); // Resets the PC
 
         if (romData.length > (4096 - 0x200)) {
             throw new Error("ROM is too large to fit in memory!");
@@ -104,7 +154,7 @@ export class CHIP8 {
         // Gets two successive bytes in memory and concatenates them into a 2-bytes instruction
         this.instruction[0] = (this.memory[this.PC[0]] << 8) | (this.memory[this.PC[0] + 1]);
 
-        this.PC[0] += 2;
+        this.addToPC(2);
     };
 
     private decode() {
@@ -198,7 +248,7 @@ export class CHIP8 {
     };
 
     private jumpTo(address: Uint16Array) {
-        this.PC[0] = address[0];
+        this.assignToPC(address[0]);
     };
 
     private loadRegister(registerOrder: Uint8Array, value: Uint8Array) {
@@ -212,7 +262,7 @@ export class CHIP8 {
     };
 
     private loadIndex(address: Uint16Array) {
-        this.I[0] = address[0];
+        this.assignToIndex(address[0]);
     };
 
     private draw(xAxisRegister: Uint8Array, yAxisRegister: Uint8Array, height: Uint8Array) {
