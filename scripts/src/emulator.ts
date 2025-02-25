@@ -13,7 +13,7 @@ const cycleValueText = document.getElementById("cycle-value-text") as HTMLElemen
 
 let cycleFrequency = 500; // Hz
 
-fetch("signed_url")
+fetch("https://chip8-roms.s3.ap-southeast-2.amazonaws.com/IBM%20Logo.ch8?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA4SYAMDUSJQCYOHS7%2F20250225%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20250225T105653Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=6ec5fa954c5fb6f50b19f681e1029316d21402ac16cb2d168117c3d4ec5a49ec")
     .then(response => {
         if (!response.ok) {
             throw new Error(`Failed to fetch ROM: ${response.status} ${response.statusText}`);

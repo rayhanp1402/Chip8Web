@@ -59,7 +59,7 @@ export class Disassembler {
         this.subscribeToChip8(chip8);
     }
 
-    private subscribeToChip8(chip8: CHIP8) {
+    private subscribeToChip8 = (chip8: CHIP8) => {
         chip8.listenToPC(this.updatePCView);
         chip8.listenToSP(this.updateSPView);
         chip8.listenToIndex(this.updateIndexView);
@@ -69,26 +69,26 @@ export class Disassembler {
         chip8.listenToPCAndMemory(this.updateInstructionView);
     }
 
-    private updatePCView(PC: number) {
+    private updatePCView = (PC: number) => {
         pcContentView.innerText = `PC: 0x${PC.toString(16).padStart(4, "0").toUpperCase()}`;
     }
 
-    private updateSPView(PC: number) {
+    private updateSPView = (PC: number) => {
         spContentView.innerText = `SP: 0x${PC.toString(16).padStart(2, "0").toUpperCase()}`;
     }
 
-    private updateIndexView(PC: number) {
+    private updateIndexView = (PC: number) => {
         indexContentView.innerText = `Index: 0x${PC.toString(16).padStart(4, "0").toUpperCase()}`;
     }
 
-    private updateVRegisterView(V: Uint8Array) {
+    private updateVRegisterView = (V: Uint8Array) => {
         for (let i = 0; i < 16; ++i) {
             vRegistersContentView[i]
             .innerHTML = `V${i.toString(16).toUpperCase()}: 0x${V[i].toString(16).padStart(2, "0").toUpperCase()}`;
         }
     }
 
-    private updateStackView(stack: Uint16Array) {
+    private updateStackView = (stack: Uint16Array) => {
         for (let i = 0; i < 16; ++i) {
             stackContentView[i]
             .innerHTML = `${i}: 0x${stack[i].toString(16).padStart(4, "0").toUpperCase()}`;
@@ -106,10 +106,10 @@ export class Disassembler {
         this.displayInstructionContents(PC, this.romMaxAddress, memory, PC);
     }
     
-    private displayMemoryContents(
+    private displayMemoryContents = (
         startingIndex: number,
         memory: Uint8Array
-    ) {
+    ) => {
         memoryOutputContents.innerHTML = `
             <pre class="memory-address">Address</pre>
         `;
@@ -139,19 +139,19 @@ export class Disassembler {
         }
     }
     
-    private updateMemoryButtonStates() {
+    private updateMemoryButtonStates = () => {
         // This will disable or enable the memory up and memory down buttons
         // According to limit
         memoryUpButton.disabled = this.currentMemoryStartIndex >= 0xFFF - 0x040;
         memoryDownButton.disabled = this.currentMemoryStartIndex <= 0x000;
     }
 
-    private displayInstructionContents(
+    private displayInstructionContents = (
         startingIndex: number,
         maxIndex: number,
         memory: Uint8Array,
         PC: number
-    ) {
+    ) => {
         instructionOutputContents.innerHTML = ``;
 
         const instructionViewSize = 5 * 2;  // Multiplied by 2 because one instruction is stored in consecutive address
