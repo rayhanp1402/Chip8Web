@@ -179,15 +179,18 @@ button:active,
     border-radius: 5px;
     max-height: 300px; /* Prevents overflow */
     overflow-y: auto;
+    width: 230px;
 }
 
 .instruction-output {
     display: grid;
     color: white;
     margin-top: 12px;
+    margin-bottom: 12px;
     gap: 10px;
     text-align: left;
     font-family: monospace;
+    width: 240px;
 }
 
 /* Ensuring preformatted text doesn't overflow */

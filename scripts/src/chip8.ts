@@ -77,6 +77,7 @@ export class CHIP8 {
     private vListeners: ((V: Uint8Array) => void)[] = [];
     private stackListeners: ((stack: Uint16Array) => void)[] = [];
     private memoryListeners: ((memory: Uint8Array, updatedAtIndex: number) => void)[] = [];
+    private pcAndMemoryListeners: ((PC: number, memory: Uint8Array) => void)[] = [];
 
     constructor() {
         this.assignToPC(0x200); // ROMs start at address 0x200
@@ -115,9 +116,17 @@ export class CHIP8 {
         this.memoryListeners.push(listener);
     }
 
+    public listenToPCAndMemory(listener: ((PC: number, memory: Uint8Array) => void)) {
+        this.pcAndMemoryListeners.push(listener);
+    }
+
     private notifyPCListeners() {
         for (let listener of this.pcListeners) {
             listener(this.PC[0]);
+        }
+
+        for (let listener of this.pcAndMemoryListeners) {
+            listener(this.PC[0], this.memory);
         }
     }
 
@@ -148,6 +157,10 @@ export class CHIP8 {
     private notifyMemoryListeners(index: number) {
         for (let listener of this.memoryListeners) {
             listener(this.memory, index);
+        }
+
+        for (let listener of this.pcAndMemoryListeners) {
+            listener(this.PC[0], this.memory);
         }
     }
 

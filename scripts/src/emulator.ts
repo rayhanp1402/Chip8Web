@@ -27,7 +27,7 @@ fetch("signed_url")
         romIndicatorLight.style.backgroundColor = '#00FF33';
         romStatusText.innerText = `Loaded 'IBM Logo.ch8' ROM`;
 
-        const disassembler = new Disassembler(chip8);
+        const disassembler = new Disassembler(chip8, buffer.byteLength);
 
         cycleUpButton.addEventListener("click", (e) => {
             cycleFrequency += 10;

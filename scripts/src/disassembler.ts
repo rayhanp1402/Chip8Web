@@ -14,10 +14,14 @@ const vRegistersContentView = document.getElementsByClassName("v-registers") as 
 
 const stackContentView = document.getElementsByClassName("stack-elements") as HTMLCollectionOf<Element>;
 
+const instructionOutputContents = document.getElementById("instruction-output-contents") as HTMLElement;
+
 export class Disassembler {
     private currentMemoryStartIndex = 0;
+    private currentInstructionIndex = 0x200;
+    private romMaxAddress: number;
 
-    constructor(chip8: CHIP8) {
+    constructor(chip8: CHIP8, romSize: number) {
         // Inititalize the stack view
         for (let i = 0; i < 16; ++i) {
             stackOutputContents.innerHTML += `
@@ -48,6 +52,9 @@ export class Disassembler {
             this.updateMemoryButtonStates();
         });
 
+        // The loaded ROM last address
+        this.romMaxAddress = 0x200 + (romSize - 1);
+
         // Subscribe/listen to CHIP8 class object to dynamically change the disassembler contents
         this.subscribeToChip8(chip8);
     }
@@ -59,6 +66,7 @@ export class Disassembler {
         chip8.listenToV(this.updateVRegisterView);
         chip8.listenToStack(this.updateStackView);
         chip8.listenToMemory(this.updateMemoryView);
+        chip8.listenToPCAndMemory(this.updateInstructionView);
     }
 
     private updatePCView(PC: number) {
@@ -87,11 +95,15 @@ export class Disassembler {
         }
     }
 
-    private updateMemoryView(memory: Uint8Array, updatedAtIndex: number) {
+    private updateMemoryView = (memory: Uint8Array, updatedAtIndex: number) => {
         // Only change the currently displayed memory contents in the memory view
         if (updatedAtIndex >= this.currentMemoryStartIndex && updatedAtIndex < this.currentMemoryStartIndex + 0x40) {
             this.displayMemoryContents(this.currentMemoryStartIndex, memory);
         }
+    }
+
+    private updateInstructionView = (PC: number, memory: Uint8Array) => {
+        this.displayInstructionContents(PC, this.romMaxAddress, memory, PC);
     }
     
     private displayMemoryContents(
@@ -132,5 +144,38 @@ export class Disassembler {
         // According to limit
         memoryUpButton.disabled = this.currentMemoryStartIndex >= 0xFFF - 0x040;
         memoryDownButton.disabled = this.currentMemoryStartIndex <= 0x000;
+    }
+
+    private displayInstructionContents(
+        startingIndex: number,
+        maxIndex: number,
+        memory: Uint8Array,
+        PC: number
+    ) {
+        instructionOutputContents.innerHTML = ``;
+
+        const instructionViewSize = 5 * 2;  // Multiplied by 2 because one instruction is stored in consecutive address
+        let lastIndex = (startingIndex < maxIndex - instructionViewSize) ? startingIndex + instructionViewSize : maxIndex;
+        const instruction = new Uint16Array(1); // The will be retrieved instruction
+
+        for (let i = startingIndex; i < lastIndex; i += 2) {
+            // Again, i is incremented by 2 becauses one instruction is stored in consecutive address
+            // Gets two successive bytes in memory and concatenates them into a 2-bytes instruction
+            instruction[0] = (memory[i] << 8) | (memory[i + 1]);
+
+            const instructionString = 
+            `<pre class="disassembler-content">0x${i.toString(16).padStart(3, "0").toUpperCase()}: 0x${instruction[0].toString(16).padStart(4, "0").toUpperCase()}</pre>`
+            if (i === PC) {
+                instructionOutputContents.innerHTML += `
+                    <div class="current-instruction-output" id="current-instruction-output-contents">
+                        ${instructionString}
+                    </div>
+                `;
+            } else {
+                instructionOutputContents.innerHTML += `
+                    ${instructionString}
+                `;
+            }
+        }
     }
 };
