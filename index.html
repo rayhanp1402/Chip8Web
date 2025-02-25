@@ -154,19 +154,19 @@
                         <div class="accordion-body d-flex">
                             <div class="instruction-list flex-grow-1">
                                 <div class="instruction-output" id="instruction-output-contents">
-                                    <pre class="disassembler-content">255: 0X00E0 DRW Vx, Vy, nibble</pre>
+                                    <!-- <pre class="disassembler-content">255: 0X00E0 DRW Vx, Vy, nibble</pre>
                                     <div class="current-instruction-output" id="current-instruction-output-contents">
                                         <pre class="disassembler-content">255: 0X00E0 DRW Vx, Vy, nibble</pre>
                                     </div>
                                     <pre class="disassembler-content">255: 0X00E0 DRW Vx, Vy, nibble</pre>
                                     <pre class="disassembler-content">255: 0X00E0 CLS</pre>
-                                    <pre class="disassembler-content">255: 0X00E0 CLS</pre>
+                                    <pre class="disassembler-content">255: 0X00E0 CLS</pre> -->
                                 </div>
                             </div>
                             <div class="d-flex flex-column ms-3">
-                                <button class="instruction-btn mb-2" id="instruction-up-button">Up</button>
-                                <button class="instruction-btn mb-4" id="instruction-down-button">Down</button>
-                                <button class="instruction-btn" id="follow-pc-button">Unfollow PC</button>
+                                <button class="instruction-btn mb-2" disabled id="instruction-down-button">Down</button>
+                                <button class="instruction-btn mb-4" disabled id="instruction-up-button">Up</button>
+                                <button class="instruction-btn" id="follow-pc-button">Following PC</button>
                             </div>
                         </div>
                     </div>
@@ -186,8 +186,8 @@
                                 <!-- Content is populated in JS -->
                             </div>
                             <div class="d-flex flex-column ms-3">
-                                <button class="memory-btn mb-2" id="memory-up-button">Up</button>
-                                <button class="memory-btn" id="memory-down-button" disabled="true">Down</button>
+                                <button class="memory-btn mb-2" id="memory-down-button" disabled="true">Down</button>
+                                <button class="memory-btn" id="memory-up-button">Up</button>
                             </div>
                         </div>
                     </div>

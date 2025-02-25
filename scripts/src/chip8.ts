@@ -168,6 +168,10 @@ export class CHIP8 {
         return this.memory;
     }
 
+    public getPC() {
+        return this.PC[0];
+    }
+
     private addToPC(value: number) {
         this.PC[0] += value;
         this.notifyPCListeners();

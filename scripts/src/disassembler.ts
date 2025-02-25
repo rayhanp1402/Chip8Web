@@ -16,10 +16,15 @@ const stackContentView = document.getElementsByClassName("stack-elements") as HT
 
 const instructionOutputContents = document.getElementById("instruction-output-contents") as HTMLElement;
 
+const instructionUpButton = document.getElementById("instruction-up-button") as HTMLButtonElement;
+const instructionDownButton = document.getElementById("instruction-down-button") as HTMLButtonElement;
+const followPCButton = document.getElementById("follow-pc-button") as HTMLButtonElement;
+
 export class Disassembler {
     private currentMemoryStartIndex = 0;
     private currentInstructionIndex = 0x200;
     private romMaxAddress: number;
+    private isFollowingPC = true;
 
     constructor(chip8: CHIP8, romSize: number) {
         // Inititalize the stack view
@@ -54,6 +59,35 @@ export class Disassembler {
 
         // The loaded ROM last address
         this.romMaxAddress = 0x200 + (romSize - 1);
+
+        // Display instructions dynamically using up and down button
+        followPCButton.addEventListener("click", (e) => {
+            // Don't get confused brother/sister, this just toggles between true or false
+            this.isFollowingPC = !this.isFollowingPC;
+            this.updateInstructionButtonStates();
+        });
+
+        instructionUpButton.addEventListener("click", (e) => {
+            this.currentInstructionIndex += 2;
+            this.updateInstructionButtonStates();
+            this.displayInstructionContents(
+                this.currentInstructionIndex, 
+                this.romMaxAddress,
+                chip8.getMemory(),
+                chip8.getPC()
+            );
+        });
+
+        instructionDownButton.addEventListener("click", (e) => {
+            this.currentInstructionIndex -= 2;
+            this.updateInstructionButtonStates();
+            this.displayInstructionContents(
+                this.currentInstructionIndex, 
+                this.romMaxAddress,
+                chip8.getMemory(),
+                chip8.getPC()
+            );
+        });
 
         // Subscribe/listen to CHIP8 class object to dynamically change the disassembler contents
         this.subscribeToChip8(chip8);
@@ -103,7 +137,8 @@ export class Disassembler {
     }
 
     private updateInstructionView = (PC: number, memory: Uint8Array) => {
-        this.displayInstructionContents(PC, this.romMaxAddress, memory, PC);
+        if (this.isFollowingPC) this.currentInstructionIndex = PC;
+        this.displayInstructionContents(this.currentInstructionIndex, this.romMaxAddress, memory, PC);
     }
     
     private displayMemoryContents = (
@@ -144,6 +179,13 @@ export class Disassembler {
         // According to limit
         memoryUpButton.disabled = this.currentMemoryStartIndex >= 0xFFF - 0x040;
         memoryDownButton.disabled = this.currentMemoryStartIndex <= 0x000;
+    }
+
+    private updateInstructionButtonStates = () => {
+        // This will disable or enable the instruction up and instruction down buttons
+        instructionUpButton.disabled = (this.currentInstructionIndex >= this.romMaxAddress - 1) || this.isFollowingPC;
+        instructionDownButton.disabled = (this.currentInstructionIndex <= 0x200) || this.isFollowingPC;
+        followPCButton.innerText = this.isFollowingPC ? `Following PC` : `Not Following PC`;
     }
 
     private displayInstructionContents = (
