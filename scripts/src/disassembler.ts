@@ -60,6 +60,14 @@ export class Disassembler {
         // The loaded ROM last address
         this.romMaxAddress = 0x200 + (romSize - 1);
 
+        // Display initial ROM
+        this.displayInstructionContents(
+            this.currentInstructionIndex, 
+            this.romMaxAddress,
+            chip8.getMemory(),
+            chip8.getPC()
+        );
+
         // Display instructions dynamically using up and down button
         followPCButton.addEventListener("click", (e) => {
             // Don't get confused brother/sister, this just toggles between true or false
