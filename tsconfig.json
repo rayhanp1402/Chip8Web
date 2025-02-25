@@ -1,11 +1,15 @@
 {
-    "compilerOptions": {
-      "target": "ES2017",
-      "strict": true,
-      "allowJs": false,
-      "outDir": "./scripts/out",
-      "rootDir": "./scripts/src",
-      "noImplicitAny": true,
-      "forceConsistentCasingInFileNames": true
-    }
-  }  
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext", 
+    "moduleResolution": "node", 
+    "strict": true,
+    "allowJs": false,
+    "outDir": "./scripts/out",
+    "rootDir": "./scripts/src",
+    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["scripts/src/**/*"],  // Ensure all TS files are included
+  "exclude": ["node_modules", "dist"]
+}
