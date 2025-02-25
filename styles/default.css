@@ -170,7 +170,7 @@ button:active,
 
 /* Disassembler Output */
 .current-instruction-output {
-    background: #111; /* Darker black for contrast */
+    background: #111;
     color: #00FF33;
     font-family: 'Silkscreen', monospace;
     font-size: 14px;
@@ -359,7 +359,7 @@ pre.memory-address {
 .terminal-output {
     width: 100%;
     max-width: 100%;
-    overflow-x: auto; /* Enables horizontal scrolling if needed */
+    overflow-x: auto;
     background-color: black;
     color: lime;
     padding: 10px;
