@@ -214,7 +214,7 @@ export class Disassembler {
             instruction[0] = (memory[i] << 8) | (memory[i + 1]);
 
             const instructionString = 
-            `<pre class="disassembler-content">0x${i.toString(16).padStart(3, "0").toUpperCase()}: 0x${instruction[0].toString(16).padStart(4, "0").toUpperCase()}</pre>`
+            `<pre class="disassembler-content">0x${i.toString(16).padStart(3, "0").toUpperCase()}: 0x${instruction[0].toString(16).padStart(4, "0").toUpperCase()} ${this.toAssemblySymbol(instruction[0])}</pre>`
             if (i === PC) {
                 instructionOutputContents.innerHTML += `
                     <div class="current-instruction-output" id="current-instruction-output-contents">
@@ -227,5 +227,101 @@ export class Disassembler {
                 `;
             }
         }
+    }
+
+    private toAssemblySymbol = (instruction: number) => {
+        // Classify/separate the bits in the instruction
+        const firstNibble = (instruction & 0xF000) >> 12;
+        const X = (instruction & 0x0F00) >> 8;
+        const Y = (instruction & 0x00F0) >> 4;
+        const N = (instruction & 0x000F);
+        const NN = (instruction & 0x00FF);
+        const NNN = (instruction & 0x0FFF);
+
+        switch(firstNibble) {
+            case 0x00:
+                switch(NNN) {
+                    case 0x0E0:
+                        return `CLS`;
+                    case 0x0EE:
+                        return `RET`
+                    default:
+                        return `SYS 0x${NNN.toString(16).padStart(3, "0").toUpperCase()}`;
+                }
+                break;
+            case 0x01:
+                return `JP 0x${NNN.toString(16).padStart(3, "0").toUpperCase()}`;
+            case 0x02:
+                return `CALL 0x${NNN.toString(16).padStart(3, "0").toUpperCase()}`;
+            case 0x03:
+                return `SE V${X.toString(16).toUpperCase()}, 0x${NN.toString(16).padStart(2, "0").toUpperCase()}`;
+            case 0x04:
+                return `SNE V${X.toString(16).toUpperCase()}, 0x${NN.toString(16).padStart(2, "0").toUpperCase()}`;
+            case 0x05:
+                return `SE V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+            case 0x06:
+                return `LD V${X.toString(16).toUpperCase()}, 0x${NN.toString(16).padStart(2, "0").toUpperCase()}`;
+            case 0x07:
+                return `ADD V${X.toString(16).toUpperCase()}, 0x${NN.toString(16).padStart(2, "0").toUpperCase()}`;
+            case 0x08:
+                switch(N) {
+                    case 0x0:
+                        return `LD V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x1:
+                        return `OR V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x2:
+                        return `AND V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x3:
+                        return `XOR V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x4:
+                        return `ADD V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x5:
+                        return `SUB V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x6:
+                        return `SHR V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0x7:
+                        return `SUBN V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                    case 0xE:
+                        return `SHL V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+                }
+            case 0x09:
+                return `SNE V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}`;
+            case 0x0A:
+                return `LD I, 0x${NNN.toString(16).padStart(3, "0").toUpperCase()}`;
+            case 0x0B:
+                return `JP V0, 0x${NNN.toString(16).padStart(3, "0").toUpperCase()}`;
+            case 0x0C:
+                return `RND V${X.toString(16).toUpperCase()}, 0x${NN.toString(16).padStart(2, "0").toUpperCase()}`;
+            case 0x0D:
+                return `DRW V${X.toString(16).toUpperCase()}, V${Y.toString(16).toUpperCase()}, 0x${N.toString(16).padStart(1, "0").toUpperCase()}`;
+            case 0x0E:
+                switch(NN) {
+                    case 0x9E:
+                        return `SKP V${X.toString(16).toUpperCase()}`;
+                    case 0xA1:
+                        return `SKNP V${X.toString(16).toUpperCase()}`;
+                }
+            case 0x0F:
+                switch(NN) {
+                    case 0x07:
+                        return `LD V${X.toString(16).toUpperCase()}, DT`;
+                    case 0x0A:
+                        return `LD V${X.toString(16).toUpperCase()}, K`;
+                    case 0x15:
+                        return `LD DT, V${X.toString(16).toUpperCase()}`;
+                    case 0x18:
+                        return `LD ST, V${X.toString(16).toUpperCase()}`;
+                    case 0x1E:
+                        return `ADD I, V${X.toString(16).toUpperCase()}`;
+                    case 0x29:
+                        return `LD F, V${X.toString(16).toUpperCase()}`;
+                    case 0x33:
+                        return `LD [I], V${X.toString(16).toUpperCase()}`;
+                    case 0x55:
+                        return `LD V${X.toString(16).toUpperCase()}, [I]`;
+                }
+            default:
+                return `NOP`;
+        };
     }
 };
