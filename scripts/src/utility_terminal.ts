@@ -81,6 +81,61 @@ export class UtilityTerminal {
 
     private processCommand() {
         this.term.writeln("");
+
+        const tokens = this.tokenizeCommand(this.buffer);
+        if (tokens.length === 0) {
+            this.writeNewline();
+            return;
+        }
+
+        const [command, sub1, sub2] = tokens;
+
+        switch (command) {
+            case "clear":
+                this.term.clear();
+                break;
+            case "help":
+                this.term.writeln("Available commands:");
+                this.term.writeln("clear                           Clears the terminal's screen.");
+                this.term.writeln("");
+                this.term.writeln("help                            Shows a list of available commands.");
+                this.term.writeln("");
+                this.term.writeln("history                         Shows up to 14 past entered commands.");
+                this.term.writeln("");
+                this.term.writeln("set cycle <value>               Sets the cycle speed to <value> Hz.");
+                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("");
+                this.term.writeln("set cycle increment <value>     Sets the increment of cycle speed");
+                this.term.writeln("                                (the up and down arrow of CYCLE panel");
+                this.term.writeln("                                below the emulator screen) to <value>");
+                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("");
+                this.term.writeln("goto instruction <address>      Instructions view jumps to <address>.");
+                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("");
+                this.term.writeln("goto memory <address>           Memory view jumps to <address>.");
+                this.term.writeln("                                Value must be a positive integer.");
+                break;
+            case "set":
+                if (sub1 === "cycle") {
+                    if (sub2 === "increment") {
+                        this.term.writeln("Cycle increment mode enabled.");
+                    } else {
+                        this.term.writeln("Cycle set mode enabled.");
+                    }
+                }
+                break;
+            case "goto":
+                if (sub1 === "instruction") {
+                    this.term.writeln("Going to instruction.");
+                } else if (sub1 === "memory") {
+                    this.term.writeln("Going to memory.");
+                }
+                break;
+            default:
+                this.term.writeln("Unknown command. Type 'help' for a list of commands.");
+        }
+
         this.buffer = "";
         this.cursorPosition = 0;
         this.writeNewline();
@@ -126,4 +181,31 @@ export class UtilityTerminal {
         }
         this.updateTerminal();
     }
+
+    private tokenizeCommand(input: string): string[] {
+        const tokens = input.trim().toLowerCase().split(/\s+/);
+    
+        // Normalize commands that have subcommands
+        return this.normalizeCommand(tokens);
+    }
+
+    private normalizeCommand(tokens: string[]): string[] {
+        if (tokens.length === 0) return [];
+    
+        const [cmd, sub1, sub2] = tokens;
+    
+        if (cmd === "set" && sub1 === "cycle") {
+            if (sub2 === "increment") return ["set", "cycle", "increment"];
+            return ["set", "cycle"];
+        } 
+        if (cmd === "goto") {
+            if (sub1 === "instruction") return ["goto", "instruction"];
+            if (sub1 === "memory") return ["goto", "memory"];
+        } 
+        if (cmd === "clear" || cmd === "help" || "history") {
+            return [cmd];
+        }
+    
+        return ["invalid"];
+    }    
 };
