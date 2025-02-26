@@ -115,20 +115,23 @@ export class UtilityTerminal {
 
     private processCommand() {
         this.term.writeln("");
-
+    
         const tokens = this.tokenizeCommand(this.buffer);
         if (tokens.length === 0) {
             this.writeNewline();
             return;
         }
-
-        const [command, sub1, sub2] = tokens;
-
+    
+        const [command, sub1, sub2, sub3] = tokens;
         let validCommand = true;
-
+    
         switch (command) {
             case "clear":
-                this.term.clear();
+                if (sub1 === "bp") {
+                    this.term.writeln("All breakpoints cleared.");
+                } else {
+                    this.term.clear();
+                }
                 break;
             case "help":
                 this.term.writeln("Available commands:");
@@ -141,9 +144,7 @@ export class UtilityTerminal {
                 this.term.writeln("set cycle <value>               Sets the cycle speed to <value> Hz.");
                 this.term.writeln("                                Value must be a positive integer.");
                 this.term.writeln("");
-                this.term.writeln("set cycle increment <value>     Sets the increment of cycle speed");
-                this.term.writeln("                                (the up and down arrow of CYCLE panel");
-                this.term.writeln("                                below the emulator screen) to <value>");
+                this.term.writeln("set cycle increment <value>     Sets the increment of cycle speed.");
                 this.term.writeln("                                Value must be a positive integer.");
                 this.term.writeln("");
                 this.term.writeln("goto instruction <address>      Instructions view jumps to <address>.");
@@ -151,47 +152,80 @@ export class UtilityTerminal {
                 this.term.writeln("");
                 this.term.writeln("goto memory <address>           Memory view jumps to <address>.");
                 this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("");
+                this.term.writeln("set bp <address>                Sets a breakpoint at <address>.");
+                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("");
+                this.term.writeln("remove bp <address>             Removes the breakpoint at <address>.");
+                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("");
+                this.term.writeln("clear bp                        Removes all breakpoints.");
                 break;
             case "history":
                 let isHistoryFull = this.commandHistory.length >= this.maxCommandHistory;
                 let i = isHistoryFull ? 1 : 0;
                 for (i; i < this.commandHistory.length; ++i) {
-                    this.term.writeln(`${(isHistoryFull) ? i : i+1}. ${this.commandHistory[i]}`);
+                    this.term.writeln(`${isHistoryFull ? i : i + 1}. ${this.commandHistory[i]}`);
                 }
-                this.term.writeln(`${(isHistoryFull) ? i : i+1}. history`);
+                this.term.writeln(`${isHistoryFull ? i : i + 1}. history`);
                 break;
             case "set":
                 if (sub1 === "cycle") {
                     if (sub2 === "increment") {
-                        this.term.writeln("Cycle increment mode enabled.");
+                        if (!sub3 || isNaN(parseInt(sub3, 10)) || parseInt(sub3, 10) <= 0) {
+                            this.term.writeln("Error: Please provide a valid positive integer for cycle increment.");
+                        } else {
+                            this.term.writeln(`Cycle increment set to ${sub3} Hz.`);
+                        }
                     } else {
-                        this.term.writeln("Cycle set mode enabled.");
+                        if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) <= 0) {
+                            this.term.writeln("Error: Please provide a valid positive integer for cycle value.");
+                        } else {
+                            this.term.writeln(`Cycle set to ${sub2} Hz.`);
+                        }
+                    }
+                } else if (sub1 === "bp") {
+                    if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) < 0) {
+                        this.term.writeln("Error: Please provide a valid positive integer for breakpoint address.");
+                    } else {
+                        this.term.writeln(`Breakpoint set at address ${sub2}.`);
+                    }
+                }
+                break;
+            case "remove":
+                if (sub1 === "bp") {
+                    if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) < 0) {
+                        this.term.writeln("Error: Please provide a valid positive integer for breakpoint address.");
+                    } else {
+                        this.term.writeln(`Breakpoint removed at address ${sub2}.`);
                     }
                 }
                 break;
             case "goto":
-                if (sub1 === "instruction") {
-                    this.term.writeln("Going to instruction.");
-                } else if (sub1 === "memory") {
-                    this.term.writeln("Going to memory.");
+                if (sub1 === "instruction" || sub1 === "memory") {
+                    if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) < 0) {
+                        this.term.writeln(`Error: Please provide a valid positive integer for ${sub1} address.`);
+                    } else {
+                        this.term.writeln(`Going to ${sub1} address ${sub2}.`);
+                    }
                 }
                 break;
             default:
                 this.term.writeln("Unknown command. Type 'help' for a list of commands.");
                 validCommand = false;
         }
-
+    
         // Append executed command to history
         if (validCommand) {
             this.commandHistory.push(this.buffer);
             if (this.commandHistory.length > this.maxCommandHistory) this.commandHistory.shift();
             this.commandHistoryPointer = this.commandHistory.length;
         }
-        
+    
         this.buffer = "";
         this.cursorPosition = 0;
         this.writeNewline();
-    }
+    }    
 
     private writeNewline() {
         this.term.write(`@${this.username}:$ `);
@@ -244,17 +278,24 @@ export class UtilityTerminal {
     private normalizeCommand(tokens: string[]): string[] {
         if (tokens.length === 0) return [];
     
-        const [cmd, sub1, sub2] = tokens;
+        const [cmd, sub1, sub2, sub3] = tokens;
     
-        if (cmd === "set" && sub1 === "cycle") {
-            if (sub2 === "increment") return ["set", "cycle", "increment"];
-            return ["set", "cycle"];
-        } 
+        if (cmd === "set") {
+            if (sub1 === "cycle") {
+                if (sub2 === "increment") return ["set", "cycle", "increment", sub3 || ""];
+                return ["set", "cycle", sub2 || ""];
+            }
+            if (sub1 === "bp" && sub2) return ["set", "bp", sub2];
+        }
+        if (cmd === "remove" && sub1 === "bp" && sub2) return ["remove", "bp", sub2];
+        if (cmd === "clear") {
+            if (sub1 === "bp") return ["clear", "bp"];
+            return ["clear"];
+        }
         if (cmd === "goto") {
-            if (sub1 === "instruction") return ["goto", "instruction"];
-            if (sub1 === "memory") return ["goto", "memory"];
-        } 
-        if (cmd === "clear" || cmd === "help" || "history") {
+            if (sub1 === "instruction" || sub1 === "memory") return ["goto", sub1, sub2 || ""];
+        }
+        if (cmd === "help" || cmd === "history") {
             return [cmd];
         }
     
