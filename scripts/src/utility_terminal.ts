@@ -142,22 +142,22 @@ export class UtilityTerminal {
                 this.term.writeln("history                         Shows up to 14 past entered commands.");
                 this.term.writeln("");
                 this.term.writeln("set cycle <value>               Sets the cycle speed to <value> Hz.");
-                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("                                Value must be a base-16 positive integer.");
                 this.term.writeln("");
                 this.term.writeln("set cycle increment <value>     Sets the increment of cycle speed.");
-                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("                                Value must be a base-16 positive integer.");
                 this.term.writeln("");
                 this.term.writeln("goto instruction <address>      Instructions view jumps to <address>.");
-                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("                                Address must be a base-16 positive integer.");
                 this.term.writeln("");
                 this.term.writeln("goto memory <address>           Memory view jumps to <address>.");
-                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("                                Address must be a base-16 positive integer.");
                 this.term.writeln("");
                 this.term.writeln("set bp <address>                Sets a breakpoint at <address>.");
-                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("                                Address must be a base-16 positive integer.");
                 this.term.writeln("");
                 this.term.writeln("remove bp <address>             Removes the breakpoint at <address>.");
-                this.term.writeln("                                Value must be a positive integer.");
+                this.term.writeln("                                Address must be a base-16 positive integer.");
                 this.term.writeln("");
                 this.term.writeln("clear bp                        Removes all breakpoints.");
                 break;
@@ -172,21 +172,21 @@ export class UtilityTerminal {
             case "set":
                 if (sub1 === "cycle") {
                     if (sub2 === "increment") {
-                        if (!sub3 || isNaN(parseInt(sub3, 10)) || parseInt(sub3, 10) <= 0) {
-                            this.term.writeln("Error: Please provide a valid positive integer for cycle increment.");
+                        if (!sub3 || isNaN(parseInt(sub3, 16)) || parseInt(sub3, 16) <= 0) {
+                            this.term.writeln("Error: Please provide a valid base-16 positive integer for cycle increment.");
                         } else {
                             this.term.writeln(`Cycle increment set to ${sub3} Hz.`);
                         }
                     } else {
-                        if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) <= 0) {
-                            this.term.writeln("Error: Please provide a valid positive integer for cycle value.");
+                        if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) <= 0) {
+                            this.term.writeln("Error: Please provide a valid base-16 positive integer for cycle value.");
                         } else {
                             this.term.writeln(`Cycle set to ${sub2} Hz.`);
                         }
                     }
                 } else if (sub1 === "bp") {
-                    if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) < 0) {
-                        this.term.writeln("Error: Please provide a valid positive integer for breakpoint address.");
+                    if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
+                        this.term.writeln("Error: Please provide a valid base-16 positive integer for breakpoint address.");
                     } else {
                         this.term.writeln(`Breakpoint set at address ${sub2}.`);
                     }
@@ -194,8 +194,8 @@ export class UtilityTerminal {
                 break;
             case "remove":
                 if (sub1 === "bp") {
-                    if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) < 0) {
-                        this.term.writeln("Error: Please provide a valid positive integer for breakpoint address.");
+                    if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
+                        this.term.writeln("Error: Please provide a valid base-16 positive integer for breakpoint address.");
                     } else {
                         this.term.writeln(`Breakpoint removed at address ${sub2}.`);
                     }
@@ -203,8 +203,8 @@ export class UtilityTerminal {
                 break;
             case "goto":
                 if (sub1 === "instruction" || sub1 === "memory") {
-                    if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) < 0) {
-                        this.term.writeln(`Error: Please provide a valid positive integer for ${sub1} address.`);
+                    if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
+                        this.term.writeln(`Error: Please provide a valid base-16 positive integer for ${sub1} address.`);
                     } else {
                         this.term.writeln(`Going to ${sub1} address ${sub2}.`);
                     }

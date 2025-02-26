@@ -12,58 +12,52 @@ const cycleUpButton = document.getElementById("cycle-up-button") as HTMLButtonEl
 const cycleDownButton = document.getElementById("cycle-down-button") as HTMLButtonElement;
 const cycleValueText = document.getElementById("cycle-value-text") as HTMLElement;
 
-let cycleFrequency = 500; // Hz
+export class Emulator {
+    private cycleFrequency = 500; // Hz
+    private cycleIncrement = 10;
+    private romName = 'IBM Logo.ch8'
 
-fetch("signed_url")
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Failed to fetch ROM: ${response.status} ${response.statusText}`);
-        }
-        return response.arrayBuffer();
-    })
-    .then(buffer => {
+    constructor(rom: Uint8Array) {
         const chip8 = new CHIP8();
-        chip8.loadROM(new Uint8Array(buffer));
+        chip8.loadROM(new Uint8Array(rom));
         
         romIndicatorLight.style.backgroundColor = '#00FF33';
-        romStatusText.innerText = `Loaded 'IBM Logo.ch8' ROM`;
+        romStatusText.innerText = `Loaded '${this.romName}' ROM`;
 
-        const disassembler = new Disassembler(chip8, buffer.byteLength);
+        const disassembler = new Disassembler(chip8, rom.byteLength);
 
         const utilityTerminal = new UtilityTerminal();
 
         cycleUpButton.addEventListener("click", (e) => {
-            cycleFrequency += 10;
-            if (cycleFrequency >= 1000) {
-                cycleFrequency = 1000;
+            this.cycleFrequency += this.cycleIncrement;
+            if (this.cycleFrequency >= 1000) {
+                this.cycleFrequency = 1000;
             }
 
-            cycleValueText.innerText = `${cycleFrequency}`;
-            chip8.changeSpeed(1000 / cycleFrequency);
-            updateCycleButtonStates();
+            cycleValueText.innerText = `${this.cycleFrequency}`;
+            chip8.changeSpeed(1000 / this.cycleFrequency);
+            this.updateCycleButtonStates();
             });
 
             cycleDownButton.addEventListener("click", (e) => {
-                cycleFrequency -= 10;
-                if (cycleFrequency <= 0) {
-                    cycleFrequency = 1;
+                this.cycleFrequency -= this.cycleIncrement;
+                if (this.cycleFrequency <= 0) {
+                    this.cycleFrequency = 1;
                 }
 
-                cycleValueText.innerText = `${cycleFrequency}`;
-                chip8.changeSpeed(1000 / cycleFrequency);
-                updateCycleButtonStates();
+                cycleValueText.innerText = `${this.cycleFrequency}`;
+                chip8.changeSpeed(1000 / this.cycleFrequency);
+                this.updateCycleButtonStates();
             });
             
-            playButton.addEventListener("click", (e) => chip8.run(1000 / cycleFrequency));
+            playButton.addEventListener("click", (e) => chip8.run(1000 / this.cycleFrequency));
             stopButton.addEventListener("click", (e) => chip8.stop());
-        })  
-        .catch(error => {
-            console.error("Error loading ROM:", error)
-        });
+    }
 
-    function updateCycleButtonStates() {
+    private updateCycleButtonStates() {
         // This will disable or enable the memory up and memory down buttons
         // According to limit
-        cycleUpButton.disabled = cycleFrequency >= 1000;    // Upper limit 1000 Hz
-        cycleDownButton.disabled = cycleFrequency <= 1;     // Lower limit 1 Hz
+        cycleUpButton.disabled = this.cycleFrequency >= 1000;    // Upper limit 1000 Hz
+        cycleDownButton.disabled = this.cycleFrequency <= 1;     // Lower limit 1 Hz
     }
+}
