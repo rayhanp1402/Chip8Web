@@ -9,6 +9,9 @@ export class UtilityTerminal {
     private lineLimit = 50;
     private buffer = ""; // Stores the current input line
     private cursorPosition = 0;
+    private commandHistory: string[] = [];    // Will be treated as a stack
+    private maxCommandHistory = 14;
+    private commandHistoryPointer = 0;
 
     // Allowed characters to be typed
     private terminalCharacters = new Set([
@@ -71,13 +74,44 @@ export class UtilityTerminal {
                 this.buffer.slice(0, this.cursorPosition) +
                 this.buffer.slice(this.cursorPosition + 1);
             this.updateTerminal();
+        } 
+        else if (data === "\x1b[A") { // Up Arrow Key (go to earlier command history)
+            if (this.commandHistory.length > 0) {
+                if (this.commandHistoryPointer > 0) {
+                    this.commandHistoryPointer--;
+                }
+                this.buffer = this.commandHistory[this.commandHistoryPointer] || "";
+                this.cursorPosition = this.buffer.length;
+                this.updateTerminal();
+            }
+        } 
+        else if (data === "\x1b[B") { // Down Arrow Key (go to later command history)
+            if (this.commandHistory.length > 0) {
+                if (this.commandHistoryPointer < this.commandHistory.length - 1) {
+                    this.commandHistoryPointer++;
+                    this.buffer = this.commandHistory[this.commandHistoryPointer];
+                } else {
+                    // If at the last command, clear the buffer
+                    this.commandHistoryPointer = this.commandHistory.length;
+                    this.buffer = "";
+                }
+                this.cursorPosition = this.buffer.length;
+                this.updateTerminal();
+            }
         }
     }
 
     private updateTerminal() {
-        this.term.write("\r@" + this.username + ":$ " + this.buffer + " ");
-        this.term.write("\r@" + this.username + ":$ " + this.buffer.slice(0, this.cursorPosition));
+        // Clear current line
+        this.term.write("\r" + " ".repeat(this.term.cols) + "\r");
+    
+        // Rewrite the prompt and buffer
+        this.term.write(`@${this.username}:$ ${this.buffer}`);
+        
+        // Reset cursor position
+        this.term.write(`\r@${this.username}:$ ${this.buffer.slice(0, this.cursorPosition)}`);
     }
+    
 
     private processCommand() {
         this.term.writeln("");
@@ -89,6 +123,8 @@ export class UtilityTerminal {
         }
 
         const [command, sub1, sub2] = tokens;
+
+        let validCommand = true;
 
         switch (command) {
             case "clear":
@@ -116,6 +152,14 @@ export class UtilityTerminal {
                 this.term.writeln("goto memory <address>           Memory view jumps to <address>.");
                 this.term.writeln("                                Value must be a positive integer.");
                 break;
+            case "history":
+                let isHistoryFull = this.commandHistory.length >= this.maxCommandHistory;
+                let i = isHistoryFull ? 1 : 0;
+                for (i; i < this.commandHistory.length; ++i) {
+                    this.term.writeln(`${(isHistoryFull) ? i : i+1}. ${this.commandHistory[i]}`);
+                }
+                this.term.writeln(`${(isHistoryFull) ? i : i+1}. history`);
+                break;
             case "set":
                 if (sub1 === "cycle") {
                     if (sub2 === "increment") {
@@ -134,8 +178,16 @@ export class UtilityTerminal {
                 break;
             default:
                 this.term.writeln("Unknown command. Type 'help' for a list of commands.");
+                validCommand = false;
         }
 
+        // Append executed command to history
+        if (validCommand) {
+            this.commandHistory.push(this.buffer);
+            if (this.commandHistory.length > this.maxCommandHistory) this.commandHistory.shift();
+            this.commandHistoryPointer = this.commandHistory.length;
+        }
+        
         this.buffer = "";
         this.cursorPosition = 0;
         this.writeNewline();
