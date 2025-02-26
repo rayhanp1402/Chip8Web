@@ -1,5 +1,6 @@
 import { CHIP8 } from "./chip8.js";
 import { Disassembler } from "./disassembler.js";
+import { UtilityTerminal } from "./utility_terminal.js";
 
 const romIndicatorLight = document.getElementById("rom-indicator") as HTMLElement;
 const romStatusText = document.getElementById("rom-status-text") as HTMLElement;
@@ -28,6 +29,8 @@ fetch("signed_url")
         romStatusText.innerText = `Loaded 'IBM Logo.ch8' ROM`;
 
         const disassembler = new Disassembler(chip8, buffer.byteLength);
+
+        const utilityTerminal = new UtilityTerminal();
 
         cycleUpButton.addEventListener("click", (e) => {
             cycleFrequency += 10;
