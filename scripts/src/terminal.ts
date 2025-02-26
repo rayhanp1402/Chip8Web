@@ -14,16 +14,27 @@ function initTerminal(): void {
     const term = new Terminal({
         cursorBlink: true,
         theme: {
-            background: "#1e1e1e",
+            background: "#000000",
             foreground: "#ffffff",
         },
-    });
+    });    
 
     // Attach terminal to the container
     term.open(terminalElement);
 
     // Print a welcome message
     term.writeln("Welcome to CHIP-8 Emulator!");
+
+    // Enable keyboard navigation for scrolling
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp") {
+            term.scrollLines(-1);
+            event.preventDefault();
+        } else if (event.key === "ArrowDown") {
+            term.scrollLines(1);
+            event.preventDefault();
+        }
+    });
 
     // Handle user input (echo input)
     term.onData((data: string) => {

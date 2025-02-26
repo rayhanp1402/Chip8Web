@@ -428,3 +428,28 @@ pre.memory-address {
     cursor: not-allowed;
     pointer-events: none;
 }
+
+/* Terminal scrollbar styling */
+.xterm-viewport {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #555 #222; /* Dark thumb, darker track */
+}
+
+/* Chrome, Edge, and Safari */
+.xterm-viewport::-webkit-scrollbar {
+    width: 8px;
+}
+
+.xterm-viewport::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 4px;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
