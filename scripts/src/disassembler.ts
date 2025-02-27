@@ -35,6 +35,7 @@ export class Disassembler {
         this.utilityTerminal = terminal;
 
         // Inititalize the stack view
+        stackOutputContents.innerHTML = ``;
         for (let i = 0; i < 16; ++i) {
             stackOutputContents.innerHTML += `
                 <pre class="disassembler-content stack-elements">${i}: 0x0000</pre>

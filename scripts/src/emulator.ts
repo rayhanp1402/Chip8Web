@@ -26,7 +26,7 @@ export class Emulator {
     private utilityTerminal: UtilityTerminal;
 
     constructor(rom: Uint8Array) {
-        this.utilityTerminal = new UtilityTerminal();
+        this.utilityTerminal = new UtilityTerminal(true);
         this.chip8 = new CHIP8(this.utilityTerminal, rom.byteLength);
         this.chip8.loadROM(new Uint8Array(rom));        
         this.disassembler = new Disassembler(this.chip8, rom.byteLength, this.utilityTerminal);

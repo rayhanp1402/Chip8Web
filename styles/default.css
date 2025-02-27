@@ -361,7 +361,7 @@ pre.memory-address {
     max-width: 100%;
     overflow-x: auto;
     background-color: black;
-    color: lime;
+    color: #ffffff;
     padding: 10px;
     border-radius: 5px;
     font-family: monospace;
@@ -452,4 +452,24 @@ pre.memory-address {
 
 .xterm-viewport::-webkit-scrollbar-thumb:hover {
     background: #777;
+}
+
+.upload-container {
+    margin-top: 10px;
+}
+
+.upload-rom-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.upload-rom-btn:hover {
+    background: #00FF33;
+    color: #000000;
 }
