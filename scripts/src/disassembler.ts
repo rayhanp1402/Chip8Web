@@ -65,7 +65,7 @@ export class Disassembler {
         });
 
         // The loaded ROM last address
-        this.romMaxAddress = 0x200 + (romSize - 1);
+        this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
 
         // Display initial ROM
         this.displayInstructionContents(
@@ -123,6 +123,7 @@ export class Disassembler {
 
     private subscribeToUtilityTerminal = () => {
         this.utilityTerminal.listenToGotoMemory(this.goToMemoryView);
+        this.utilityTerminal.listenToGotoInstruction(this.goToInstructionView);
     }
 
     private updatePCView = (PC: number) => {
@@ -158,9 +159,9 @@ export class Disassembler {
         }
     }
 
-    private updateInstructionView = (PC: number, memory: Uint8Array) => {
+    private updateInstructionView = (PC: number) => {
         if (this.isFollowingPC) this.currentInstructionIndex = PC;
-        this.displayInstructionContents(this.currentInstructionIndex, this.romMaxAddress, memory, PC);
+        this.displayInstructionContents(this.currentInstructionIndex, this.romMaxAddress, this.chip8.getMemory(), PC);
     }
 
     private goToMemoryView = (address: number) => {
@@ -179,6 +180,27 @@ export class Disassembler {
         this.updateMemoryButtonStates();
         
         return pointedAddress;
+    }
+
+    private goToInstructionView = (address: number) => {
+        if (address >= this.romMaxAddress) {
+            this.currentInstructionIndex = this.romMaxAddress - (this.romMaxAddress % 2);
+        } else if (address <= 0x200) {
+            this.currentInstructionIndex = 0x200;
+        } else {
+            this.currentInstructionIndex = address - (address % 2);
+        }
+
+        this.isFollowingPC = false;
+        this.updateInstructionButtonStates();
+        this.displayInstructionContents(
+            this.currentInstructionIndex, 
+            this.romMaxAddress,
+            this.chip8.getMemory(),
+            this.chip8.getPC()
+        );
+
+        return this.currentInstructionIndex;
     }
     
     private displayMemoryContents = (startingIndex: number) => {

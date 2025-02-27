@@ -17,6 +17,7 @@ export class UtilityTerminal {
     private setCycleListener: (speed: number) => number = (speed: number) => {return -1};
     private setCycleIncrementListener: (increment: number) => number = (increment: number) => {return -1};
     private gotoMemoryListener: (address: number) => number = (address: number) => {return -1};
+    private gotoInstructionListener: (address: number) => number = (address: number) => {return -1};
 
     // Allowed characters to be typed
     private terminalCharacters = new Set([
@@ -69,6 +70,14 @@ export class UtilityTerminal {
 
     private notifyGotoMemoryListener(address: number) {
         return this.gotoMemoryListener(address);
+    }
+    
+    public listenToGotoInstruction(listener: ((address: number) => number)) {
+        this.gotoInstructionListener = listener;
+    }
+
+    private notifyGotoInstructionListener(address: number) {
+        return this.gotoInstructionListener(address);
     }
 
     private handleInput(data: string) {
@@ -245,8 +254,8 @@ export class UtilityTerminal {
                     if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
                         this.term.writeln(`Error: Please provide a valid base-16 non-negative integer for ${sub1} address.`);
                     } else {
-                        const memoryAddressValue = this.notifyGotoMemoryListener(parseInt(sub2, 10));
-                        this.term.writeln(`Going to ${sub1} address ${sub2}.`);
+                        const instructionAddressValue = this.notifyGotoInstructionListener(parseInt(sub2, 16));
+                        this.term.writeln(`Going to ${sub1} address ${instructionAddressValue.toString(16).padStart(3, "0")}.`);
                     }
                 }
                 break;
