@@ -16,6 +16,7 @@ export class UtilityTerminal {
     // Only allow one listener per UtilityTerminal fields
     private setCycleListener: (speed: number) => number = (speed: number) => {return -1};
     private setCycleIncrementListener: (increment: number) => number = (increment: number) => {return -1};
+    private gotoMemoryListener: (address: number) => number = (address: number) => {return -1};
 
     // Allowed characters to be typed
     private terminalCharacters = new Set([
@@ -36,7 +37,7 @@ export class UtilityTerminal {
     
         this.term.open(xTermContainer);
     
-        this.term.writeln(`Welcome to CHIP-8 Emulator, ${this.username}!\n`);
+        this.term.writeln(`Welcome to CHIP-8 Web Emulator, ${this.username}!\n`);
         this.writeNewline();
     
         // Handle user input
@@ -50,16 +51,24 @@ export class UtilityTerminal {
         this.setCycleListener = listener;
     }
 
-    private notifyCycleListeners(speed: number) {
+    private notifyCycleListener(speed: number) {
         return this.setCycleListener(speed);
     }
 
-    public listenToSetCycleInrcement(listener: ((increment: number) => number)) {
+    public listenToSetCycleIncrement(listener: ((increment: number) => number)) {
         this.setCycleIncrementListener = listener;
     }
 
-    private notifyCycleIncrementListeners(increment: number) {
+    private notifyCycleIncrementListener(increment: number) {
         return this.setCycleIncrementListener(increment);
+    }
+    
+    public listenToGotoMemory(listener: ((address: number) => number)) {
+        this.gotoMemoryListener = listener;
+    }
+
+    private notifyGotoMemoryListener(address: number) {
+        return this.gotoMemoryListener(address);
     }
 
     private handleInput(data: string) {
@@ -195,14 +204,14 @@ export class UtilityTerminal {
                         if (!sub3 || isNaN(parseInt(sub3, 10)) || parseInt(sub3, 10) <= 0) {
                             this.term.writeln("Error: Please provide a valid base-10 positive integer for cycle increment.");
                         } else {
-                            const incrementValue = this.notifyCycleIncrementListeners(parseInt(sub3, 10));
+                            const incrementValue = this.notifyCycleIncrementListener(parseInt(sub3, 10));
                             this.term.writeln(`Cycle increment set to ${incrementValue} Hz.`);
                         }
                     } else {
                         if (!sub2 || isNaN(parseInt(sub2, 10)) || parseInt(sub2, 10) <= 0) {
                             this.term.writeln("Error: Please provide a valid base-10 positive integer for cycle value.");
                         } else {
-                            const cycleValue = this.notifyCycleListeners(parseInt(sub2, 10));
+                            const cycleValue = this.notifyCycleListener(parseInt(sub2, 10));
                             this.term.writeln(`Cycle set to ${cycleValue} Hz.`);
                         }
                     }
@@ -224,10 +233,19 @@ export class UtilityTerminal {
                 }
                 break;
             case "goto":
-                if (sub1 === "instruction" || sub1 === "memory") {
+                if (sub1 === "memory") {
                     if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
                         this.term.writeln(`Error: Please provide a valid base-16 non-negative integer for ${sub1} address.`);
                     } else {
+                        const memoryAddressValue = this.notifyGotoMemoryListener(parseInt(sub2, 16));
+                        this.term.writeln(`Going to ${sub1} address 0x${memoryAddressValue.toString(16).padStart(3, "0")}.`);
+                    }
+                }
+                else if (sub1 === "instruction") {
+                    if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
+                        this.term.writeln(`Error: Please provide a valid base-16 non-negative integer for ${sub1} address.`);
+                    } else {
+                        const memoryAddressValue = this.notifyGotoMemoryListener(parseInt(sub2, 10));
                         this.term.writeln(`Going to ${sub1} address ${sub2}.`);
                     }
                 }

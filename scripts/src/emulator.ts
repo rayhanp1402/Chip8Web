@@ -32,11 +32,11 @@ export class Emulator {
         romIndicatorLight.style.backgroundColor = '#00FF33';
         romStatusText.innerText = `Loaded '${this.romName}' ROM`;
 
-        this.disassembler = new Disassembler(this.chip8, rom.byteLength);
-
         this.utilityTerminal = new UtilityTerminal();
+        this.disassembler = new Disassembler(this.chip8, rom.byteLength, this.utilityTerminal);
 
-        // Subscribe utility terminal to listen to the inputted changes by the user (cycle and breakpoints)
+
+        // Subscribe utility terminal to listen to the inputted changes by the user (cycle changes)
         this.subscribeToUtilityTerminal();
         
 
@@ -84,6 +84,6 @@ export class Emulator {
 
     private subscribeToUtilityTerminal = () => {
         this.utilityTerminal.listenToSetCycle(this.changeCycleFrequency);
-        this.utilityTerminal.listenToSetCycleInrcement(this.changeCycleIncrement);
+        this.utilityTerminal.listenToSetCycleIncrement(this.changeCycleIncrement);
     }
 }

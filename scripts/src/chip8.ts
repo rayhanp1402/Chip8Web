@@ -76,7 +76,7 @@ export class CHIP8 {
     private indexListeners: ((I: number) =>void)[] = [];
     private vListeners: ((V: Uint8Array) => void)[] = [];
     private stackListeners: ((stack: Uint16Array) => void)[] = [];
-    private memoryListeners: ((memory: Uint8Array, updatedAtIndex: number) => void)[] = [];
+    private memoryListeners: ((updatedAtIndex: number) => void)[] = [];
     private pcAndMemoryListeners: ((PC: number, memory: Uint8Array) => void)[] = [];
 
     constructor() {
@@ -112,7 +112,7 @@ export class CHIP8 {
         this.stackListeners.push(listener);
     }
 
-    public listenToMemory(listener: ((memory: Uint8Array, updatedAtIndex: number) => void)) {
+    public listenToMemory(listener: ((updatedAtIndex: number) => void)) {
         this.memoryListeners.push(listener);
     }
 
@@ -156,7 +156,7 @@ export class CHIP8 {
 
     private notifyMemoryListeners(index: number) {
         for (let listener of this.memoryListeners) {
-            listener(this.memory, index);
+            listener(index);
         }
 
         for (let listener of this.pcAndMemoryListeners) {

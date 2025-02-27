@@ -1,4 +1,5 @@
 import { CHIP8 } from "./chip8";
+import { UtilityTerminal } from "./utility_terminal";
 
 const stackOutputContents = document.getElementById("stack-output-contents") as HTMLElement;
 const memoryOutputContents = document.getElementById("memory-output-contents") as HTMLElement;
@@ -26,7 +27,13 @@ export class Disassembler {
     private romMaxAddress: number;
     private isFollowingPC = true;
 
-    constructor(chip8: CHIP8, romSize: number) {
+    private chip8: CHIP8;
+    private utilityTerminal: UtilityTerminal;
+
+    constructor(chip8: CHIP8, romSize: number, terminal: UtilityTerminal) {
+        this.chip8 = chip8;
+        this.utilityTerminal = terminal;
+
         // Inititalize the stack view
         for (let i = 0; i < 16; ++i) {
             stackOutputContents.innerHTML += `
@@ -36,13 +43,13 @@ export class Disassembler {
     
         // Memory view
         // Display initial memory contents (0x000 - 0x03F)
-        this.displayMemoryContents(0, chip8.getMemory());
+        this.displayMemoryContents(0);
     
         // Display memory dynamically using up and down button
         memoryUpButton.addEventListener("click", (e) => {
             if (this.currentMemoryStartIndex < 0xFFF - 0x040) {
                 this.currentMemoryStartIndex += 0x040;
-                this.displayMemoryContents(this.currentMemoryStartIndex, chip8.getMemory());
+                this.displayMemoryContents(this.currentMemoryStartIndex);
             }
     
             this.updateMemoryButtonStates();
@@ -51,7 +58,7 @@ export class Disassembler {
         memoryDownButton.addEventListener("click", (e) => {
             if (this.currentMemoryStartIndex > 0x000) {
                 this.currentMemoryStartIndex -= 0x040;
-                this.displayMemoryContents(this.currentMemoryStartIndex, chip8.getMemory());
+                this.displayMemoryContents(this.currentMemoryStartIndex);
             }
     
             this.updateMemoryButtonStates();
@@ -64,8 +71,8 @@ export class Disassembler {
         this.displayInstructionContents(
             this.currentInstructionIndex, 
             this.romMaxAddress,
-            chip8.getMemory(),
-            chip8.getPC()
+            this.chip8.getMemory(),
+            this.chip8.getPC()
         );
 
         // Display instructions dynamically using up and down button
@@ -81,8 +88,8 @@ export class Disassembler {
             this.displayInstructionContents(
                 this.currentInstructionIndex, 
                 this.romMaxAddress,
-                chip8.getMemory(),
-                chip8.getPC()
+                this.chip8.getMemory(),
+                this.chip8.getPC()
             );
         });
 
@@ -92,23 +99,30 @@ export class Disassembler {
             this.displayInstructionContents(
                 this.currentInstructionIndex, 
                 this.romMaxAddress,
-                chip8.getMemory(),
-                chip8.getPC()
+                this.chip8.getMemory(),
+                this.chip8.getPC()
             );
         });
 
         // Subscribe/listen to CHIP8 class object to dynamically change the disassembler contents
-        this.subscribeToChip8(chip8);
+        this.subscribeToChip8();
+
+        // Subscribe utility terminal to listen to the inputted changes by the user (gotos and breakpoints)
+        this.subscribeToUtilityTerminal();
     }
 
-    private subscribeToChip8 = (chip8: CHIP8) => {
-        chip8.listenToPC(this.updatePCView);
-        chip8.listenToSP(this.updateSPView);
-        chip8.listenToIndex(this.updateIndexView);
-        chip8.listenToV(this.updateVRegisterView);
-        chip8.listenToStack(this.updateStackView);
-        chip8.listenToMemory(this.updateMemoryView);
-        chip8.listenToPCAndMemory(this.updateInstructionView);
+    private subscribeToChip8 = () => {
+        this.chip8.listenToPC(this.updatePCView);
+        this.chip8.listenToSP(this.updateSPView);
+        this.chip8.listenToIndex(this.updateIndexView);
+        this.chip8.listenToV(this.updateVRegisterView);
+        this.chip8.listenToStack(this.updateStackView);
+        this.chip8.listenToMemory(this.updateMemoryView);
+        this.chip8.listenToPCAndMemory(this.updateInstructionView);
+    }
+
+    private subscribeToUtilityTerminal = () => {
+        this.utilityTerminal.listenToGotoMemory(this.goToMemoryView);
     }
 
     private updatePCView = (PC: number) => {
@@ -137,10 +151,10 @@ export class Disassembler {
         }
     }
 
-    private updateMemoryView = (memory: Uint8Array, updatedAtIndex: number) => {
+    private updateMemoryView = (updatedAtIndex: number) => {
         // Only change the currently displayed memory contents in the memory view
         if (updatedAtIndex >= this.currentMemoryStartIndex && updatedAtIndex < this.currentMemoryStartIndex + 0x40) {
-            this.displayMemoryContents(this.currentMemoryStartIndex, memory);
+            this.displayMemoryContents(this.currentMemoryStartIndex);
         }
     }
 
@@ -148,11 +162,26 @@ export class Disassembler {
         if (this.isFollowingPC) this.currentInstructionIndex = PC;
         this.displayInstructionContents(this.currentInstructionIndex, this.romMaxAddress, memory, PC);
     }
+
+    private goToMemoryView = (address: number) => {
+        let pointedAddress = address;
+        if (address >= 0xFFF) {
+            pointedAddress = 0xFFF;
+            this.currentMemoryStartIndex = 0xFC0;
+        } else if (address <= 0x0) {
+            pointedAddress = 0x0;
+            this.currentMemoryStartIndex = 0x0;
+        } else {
+            this.currentMemoryStartIndex = address - (address % 16);
+        }
+
+        this.displayMemoryContents(this.currentMemoryStartIndex);
+        this.updateMemoryButtonStates();
+        
+        return pointedAddress;
+    }
     
-    private displayMemoryContents = (
-        startingIndex: number,
-        memory: Uint8Array
-    ) => {
+    private displayMemoryContents = (startingIndex: number) => {
         memoryOutputContents.innerHTML = `
             <pre class="memory-address">Address</pre>
         `;
@@ -175,7 +204,7 @@ export class Disassembler {
                 msbByteIndex += memoryViewTotalColumns - 1;
             } else {
                 memoryOutputContents.innerHTML += `
-                   <pre class="disassembler-content">${memory[memoryIndex].toString(16).padStart(2, "0").toUpperCase()}</pre>
+                   <pre class="disassembler-content">${this.chip8.getMemory()[memoryIndex].toString(16).padStart(2, "0").toUpperCase()}</pre>
                 `;
                 ++memoryIndex;
             }
