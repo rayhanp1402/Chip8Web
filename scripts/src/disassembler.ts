@@ -26,6 +26,7 @@ export class Disassembler {
     private currentInstructionIndex = 0x200;
     private romMaxAddress: number;
     private isFollowingPC = true;
+    private breakpoints: Set<Number> = new Set();
 
     private chip8: CHIP8;
     private utilityTerminal: UtilityTerminal;
@@ -124,6 +125,10 @@ export class Disassembler {
     private subscribeToUtilityTerminal = () => {
         this.utilityTerminal.listenToGotoMemory(this.goToMemoryView);
         this.utilityTerminal.listenToGotoInstruction(this.goToInstructionView);
+        this.utilityTerminal.listenToSetBreakpoint(this.setBreakpoint);
+        this.utilityTerminal.listenToRemoveBreakpoint(this.removeBreakpoint);
+        this.utilityTerminal.listenToClearBreakpoint(this.clearBreakpoint);
+        this.utilityTerminal.listenToShowBreakpoint(this.showBreakpoint);
     }
 
     private updatePCView = (PC: number) => {
@@ -201,6 +206,39 @@ export class Disassembler {
         );
 
         return this.currentInstructionIndex;
+    }
+
+    private showBreakpoint = () => {
+        return this.breakpoints;
+    }
+
+    private setBreakpoint = (address: number) => {
+        if (address > this.romMaxAddress) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is larger than the ROM's last address 0x${this.romMaxAddress.toString(16)}.`
+        } else if (address < 0x200) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is smaller than the ROM's first address 0x200.`
+        } else {
+            this.breakpoints.add(address - (address % 2));
+            return `Breakpoint set to address 0x${(address - (address % 2)).toString(16)}`;
+        }
+    }
+
+    private removeBreakpoint = (address: number) => {
+        if (address > this.romMaxAddress) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is larger than the ROM's last address 0x${this.romMaxAddress.toString(16)}.`
+        } else if (address < 0x200) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is smaller than the ROM's first address 0x200.`
+        } else if (this.breakpoints.has(address - (address % 2))) {
+            this.breakpoints.delete(address - (address % 2));
+            return `Breakpoint removed at address 0x${(address - (address % 2)).toString(16)}.`;
+        } else {
+            return `Breakpoint not found.`;
+        }
+    }
+
+    private clearBreakpoint = () => {
+        this.breakpoints.clear();
+        return `Breakpoints have been cleared.`
     }
     
     private displayMemoryContents = (startingIndex: number) => {

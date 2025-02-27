@@ -14,10 +14,14 @@ export class UtilityTerminal {
     private commandHistoryPointer = 0;
 
     // Only allow one listener per UtilityTerminal fields
-    private setCycleListener: (speed: number) => number = (speed: number) => {return -1};
-    private setCycleIncrementListener: (increment: number) => number = (increment: number) => {return -1};
-    private gotoMemoryListener: (address: number) => number = (address: number) => {return -1};
-    private gotoInstructionListener: (address: number) => number = (address: number) => {return -1};
+    private setCycleListener: (speed: number) => number = (speed: number) => -1;
+    private setCycleIncrementListener: (increment: number) => number = (increment: number) => -1;
+    private gotoMemoryListener: (address: number) => number = (address: number) => -1;
+    private gotoInstructionListener: (address: number) => number = (address: number) => -1;
+    private setBreakpointListener: (address: number) => string = (address: number) => "";
+    private removeBreakpointListener: (address: number) => string = (address: number) => "";
+    private clearBreakpointListener: () => string = () => "";
+    private showBreakpointListener: () => Set<Number> = () => new Set();
 
     // Allowed characters to be typed
     private terminalCharacters = new Set([
@@ -78,6 +82,38 @@ export class UtilityTerminal {
 
     private notifyGotoInstructionListener(address: number) {
         return this.gotoInstructionListener(address);
+    }
+
+    public listenToSetBreakpoint(listener: ((address: number) => string)) {
+        this.setBreakpointListener = listener;
+    }
+
+    private notifySetBreakpointListener(address: number) {
+        return this.setBreakpointListener(address);
+    }
+
+    public listenToRemoveBreakpoint(listener: ((address: number) => string)) {
+        this.removeBreakpointListener = listener;
+    }
+
+    private notifyRemoveBreakpointListener(address: number) {
+        return this.removeBreakpointListener(address);
+    }
+
+    public listenToClearBreakpoint(listener: (() => string)) {
+        this.clearBreakpointListener = listener;
+    }
+
+    private notifyClearBreakpointListener() {
+        return this.clearBreakpointListener();
+    }
+    
+    public listenToShowBreakpoint(listener: (() => Set<Number>)) {
+        this.showBreakpointListener = listener;
+    }
+
+    private notifyShowBreakpointListener() {
+        return this.showBreakpointListener();
     }
 
     private handleInput(data: string) {
@@ -166,7 +202,7 @@ export class UtilityTerminal {
         switch (command) {
             case "clear":
                 if (sub1 === "bp") {
-                    this.term.writeln("All breakpoints cleared.");
+                    this.term.writeln(`${this.notifyClearBreakpointListener()}`);
                 } else {
                     this.term.clear();
                 }
@@ -198,6 +234,8 @@ export class UtilityTerminal {
                 this.term.writeln("                                Address must be a base-16 non-negative integer.");
                 this.term.writeln("");
                 this.term.writeln("clear bp                        Removes all breakpoints.");
+                this.term.writeln("");
+                this.term.writeln("bp                              Shows all breakpoints.");
                 break;
             case "history":
                 let isHistoryFull = this.commandHistory.length >= this.maxCommandHistory;
@@ -206,6 +244,15 @@ export class UtilityTerminal {
                     this.term.writeln(`${isHistoryFull ? i : i + 1}. ${this.commandHistory[i]}`);
                 }
                 this.term.writeln(`${isHistoryFull ? i : i + 1}. history`);
+                break;
+            case "bp":
+                this.term.writeln("Breakpoints:");
+                const breakpoints = this.notifyShowBreakpointListener();
+                let j = 1;
+                for (const breakpoint of breakpoints) {
+                    this.term.writeln(`${j}. 0x${breakpoint.toString(16)}`);
+                    ++j;
+                }
                 break;
             case "set":
                 if (sub1 === "cycle") {
@@ -228,7 +275,7 @@ export class UtilityTerminal {
                     if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
                         this.term.writeln("Error: Please provide a valid base-16 non-negative integer for breakpoint address.");
                     } else {
-                        this.term.writeln(`Breakpoint set at address ${sub2}.`);
+                        this.term.writeln(`${this.notifySetBreakpointListener(parseInt(sub2, 16))}`);
                     }
                 }
                 break;
@@ -237,7 +284,7 @@ export class UtilityTerminal {
                     if (!sub2 || isNaN(parseInt(sub2, 16)) || parseInt(sub2, 16) < 0) {
                         this.term.writeln("Error: Please provide a valid base-16 non-negative integer for breakpoint address.");
                     } else {
-                        this.term.writeln(`Breakpoint removed at address ${sub2}.`);
+                        this.term.writeln(`${this.notifyRemoveBreakpointListener(parseInt(sub2, 16))}`);
                     }
                 }
                 break;
@@ -255,7 +302,7 @@ export class UtilityTerminal {
                         this.term.writeln(`Error: Please provide a valid base-16 non-negative integer for ${sub1} address.`);
                     } else {
                         const instructionAddressValue = this.notifyGotoInstructionListener(parseInt(sub2, 16));
-                        this.term.writeln(`Going to ${sub1} address ${instructionAddressValue.toString(16).padStart(3, "0")}.`);
+                        this.term.writeln(`Going to ${sub1} address 0x${instructionAddressValue.toString(16).padStart(3, "0")}.`);
                     }
                 }
                 break;
@@ -344,7 +391,7 @@ export class UtilityTerminal {
         if (cmd === "goto") {
             if (sub1 === "instruction" || sub1 === "memory") return ["goto", sub1, sub2 || ""];
         }
-        if (cmd === "help" || cmd === "history") {
+        if (cmd === "help" || cmd === "history" || "bp") {
             return [cmd];
         }
     
