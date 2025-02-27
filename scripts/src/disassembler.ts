@@ -34,14 +34,6 @@ export class Disassembler {
         this.chip8 = chip8;
         this.utilityTerminal = terminal;
 
-        // Inititalize the stack view
-        stackOutputContents.innerHTML = ``;
-        for (let i = 0; i < 16; ++i) {
-            stackOutputContents.innerHTML += `
-                <pre class="disassembler-content stack-elements">${i}: 0x0000</pre>
-            `;
-        }
-    
         // Memory view
         // Display initial memory contents (0x000 - 0x03F)
         this.displayMemoryContents(0);

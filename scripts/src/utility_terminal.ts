@@ -32,10 +32,7 @@ export class UtilityTerminal {
         " "
     ]);
 
-    constructor(usable: boolean) {
-        // Usable just means if the terminal will be able to be used for the user.
-        // Case of unusable terminal is when there is no loaded ROM yet.
-        
+    constructor() {
         this.term = new Terminal({
             cursorBlink: true,
             theme: {
@@ -43,8 +40,6 @@ export class UtilityTerminal {
                 foreground: "#ffffff",
             },
         });  
-
-        if (!usable) return;
 
         xTermContainer.innerHTML = ``;
 

@@ -65,6 +65,10 @@ export class CHIP8 {
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     ];
 
+    // Fonts stored in addresses 0x050-0x0A0
+    private fontsetSize = 80;
+    private fontsetStartAddress = 0x50;
+
     // Display representation
     private display = Array.from({ length: 32 }, () => Array(64).fill(0));
 
@@ -97,13 +101,9 @@ export class CHIP8 {
 
         this.assignToPC(0x200); // ROMs start at address 0x200
 
-        // Fonts stored in addresses 0x050-0x0A0
-        const fontsetSize = 80;
-        const fontsetStartAddress = 0x50;
-
         // Loads the fonts into memory
-        for (let i = 0; i < fontsetSize; ++i) {
-            this.assignToMemory(fontsetStartAddress + i, this.fontset[i]);
+        for (let i = 0; i < this.fontsetSize; ++i) {
+            this.assignToMemory(this.fontsetStartAddress + i, this.fontset[i]);
         }
 
         // Subscribe utility terminal to listen to the inputted changes by the user (breakpoints)
@@ -241,6 +241,11 @@ export class CHIP8 {
         this.notifyPCListeners();
     }
 
+    private assignToSP(value: number) {
+        this.SP[0] = value;
+        this.notifySPListeners();
+    }
+
     private assignToIndex(value: number) {
         this.I[0] = value;
         this.notifyIndexListeners();
@@ -261,6 +266,11 @@ export class CHIP8 {
     private assignToMemory(index: number, value: number) {
         this.memory[index] = value;
         this.notifyMemoryListeners(index);
+    }
+
+    private assignToStack(index: number, value: number) {
+        this.stack[index] = value;
+        this.notifyStackListeners();
     }
 
     public loadROM(romData: Uint8Array) {
@@ -399,6 +409,42 @@ export class CHIP8 {
         this.cycle(); // Execute a single instruction
 
         return this.PC[0];
+    }
+
+    public reset(romSize: number) {
+        // This will reset all states of the CHIP-8
+        this.stop();
+
+        this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
+
+        this.breakpoints.clear();
+        this.lastBreakpoint = null;
+        this.assignToPC(0x200);
+        this.assignToIndex(0);
+        this.assignToSP(0);
+        this.instruction[0] = 0;
+        this.firstNibble[0] = 0;
+        this.X[0] = 0;
+        this.Y[0] = 0;
+        this.N[0] = 0;
+        this.NN[0] = 0;
+        this.NNN[0] = 0;
+        
+        for (let i = 0; i < 16; ++i) {
+            this.assignToV(i, 0);
+            this.assignToStack(i, 0);
+        }
+
+        for (let i = 0; i < 4096; ++i) {
+            this.assignToMemory(i, 0);
+        }
+
+        // Loads the fonts into memory
+        for (let i = 0; i < this.fontsetSize; ++i) {
+            this.assignToMemory(this.fontsetStartAddress + i, this.fontset[i]);
+        }
+
+        this.clearScreen();
     }
 
     private clearScreen() {

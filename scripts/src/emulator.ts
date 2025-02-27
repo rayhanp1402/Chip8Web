@@ -15,7 +15,6 @@ const cycleValueText = document.getElementById("cycle-value-text") as HTMLElemen
 export class Emulator {
     private cycleFrequency = 500; // Hz
     private cycleIncrement = 10;
-    private romName = 'IBM Logo.ch8';
     private maxFrequency = 1000;    // Hz
     private minFrequency = 1;   // Hz
     private maxIncrement = 500;
@@ -25,15 +24,14 @@ export class Emulator {
     private disassembler: Disassembler;
     private utilityTerminal: UtilityTerminal;
 
-    constructor(rom: Uint8Array) {
-        this.utilityTerminal = new UtilityTerminal(true);
+    constructor(rom: Uint8Array, fileName: string) {
+        this.utilityTerminal = new UtilityTerminal();
         this.chip8 = new CHIP8(this.utilityTerminal, rom.byteLength);
         this.chip8.loadROM(new Uint8Array(rom));        
         this.disassembler = new Disassembler(this.chip8, rom.byteLength, this.utilityTerminal);
 
         romIndicatorLight.style.backgroundColor = '#00FF33';
-        romStatusText.innerText = `Loaded '${this.romName}' ROM`;
-
+        romStatusText.innerText = `Loaded '${fileName}' ROM`;
 
         // Subscribe utility terminal to listen to the inputted changes by the user (cycle changes)
         this.subscribeToUtilityTerminal();
@@ -44,6 +42,13 @@ export class Emulator {
         
         playButton.addEventListener("click", (e) => this.chip8.run(1000 / this.cycleFrequency));
         stopButton.addEventListener("click", (e) => this.chip8.stop());
+    }
+
+    public reset(rom: Uint8Array, fileName: string) {
+        this.chip8.reset(rom.byteLength);
+        this.chip8.loadROM(new Uint8Array(rom));
+
+        romStatusText.innerText = `Loaded '${fileName}' ROM`;
     }
 
     private changeCycleIncrement = (value: number) => {
