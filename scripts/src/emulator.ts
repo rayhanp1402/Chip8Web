@@ -26,14 +26,13 @@ export class Emulator {
     private utilityTerminal: UtilityTerminal;
 
     constructor(rom: Uint8Array) {
-        this.chip8 = new CHIP8();
-        this.chip8.loadROM(new Uint8Array(rom));
-        
+        this.utilityTerminal = new UtilityTerminal();
+        this.chip8 = new CHIP8(this.utilityTerminal, rom.byteLength);
+        this.chip8.loadROM(new Uint8Array(rom));        
+        this.disassembler = new Disassembler(this.chip8, rom.byteLength, this.utilityTerminal);
+
         romIndicatorLight.style.backgroundColor = '#00FF33';
         romStatusText.innerText = `Loaded '${this.romName}' ROM`;
-
-        this.utilityTerminal = new UtilityTerminal();
-        this.disassembler = new Disassembler(this.chip8, rom.byteLength, this.utilityTerminal);
 
 
         // Subscribe utility terminal to listen to the inputted changes by the user (cycle changes)

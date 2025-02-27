@@ -22,6 +22,7 @@ export class UtilityTerminal {
     private removeBreakpointListener: (address: number) => string = (address: number) => "";
     private clearBreakpointListener: () => string = () => "";
     private showBreakpointListener: () => Set<Number> = () => new Set();
+    private stepListener: () => number = () => -1;
 
     // Allowed characters to be typed
     private terminalCharacters = new Set([
@@ -114,6 +115,14 @@ export class UtilityTerminal {
 
     private notifyShowBreakpointListener() {
         return this.showBreakpointListener();
+    }
+
+    public listenToStep(listener: (() => number)) {
+        this.stepListener = listener;
+    }
+
+    private notifyStepListener() {
+        return this.stepListener();
     }
 
     private handleInput(data: string) {
@@ -236,6 +245,8 @@ export class UtilityTerminal {
                 this.term.writeln("clear bp                        Removes all breakpoints.");
                 this.term.writeln("");
                 this.term.writeln("bp                              Shows all breakpoints.");
+                this.term.writeln("");
+                this.term.writeln("step                            Execute the next instruction once.");
                 break;
             case "history":
                 let isHistoryFull = this.commandHistory.length >= this.maxCommandHistory;
@@ -252,6 +263,14 @@ export class UtilityTerminal {
                 for (const breakpoint of breakpoints) {
                     this.term.writeln(`${j}. 0x${breakpoint.toString(16)}`);
                     ++j;
+                }
+                break;
+            case "step":
+                const stepAddress = this.notifyStepListener();
+                if (stepAddress === -1) {
+                    this.term.writeln(`Cannot step! Program is running.`);
+                } else {
+                    this.term.writeln(`Stepped to instruction at address 0x${stepAddress.toString(16)}`);
                 }
                 break;
             case "set":
@@ -391,7 +410,7 @@ export class UtilityTerminal {
         if (cmd === "goto") {
             if (sub1 === "instruction" || sub1 === "memory") return ["goto", sub1, sub2 || ""];
         }
-        if (cmd === "help" || cmd === "history" || "bp") {
+        if (cmd === "help" || cmd === "history" || "bp" || "step") {
             return [cmd];
         }
     

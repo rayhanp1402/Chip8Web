@@ -1,4 +1,5 @@
 import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT, ON_COLOR } from "./screen.js";
+import { UtilityTerminal } from "./utility_terminal.js";
 
 export class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
@@ -79,7 +80,21 @@ export class CHIP8 {
     private memoryListeners: ((updatedAtIndex: number) => void)[] = [];
     private pcAndMemoryListeners: ((PC: number, memory: Uint8Array) => void)[] = [];
 
-    constructor() {
+    // Terminal feature
+    private utilityTerminal: UtilityTerminal;
+
+    private breakpoints: Set<Number> = new Set();
+    private lastBreakpoint: number | null = null;
+
+    // Last address of the ROM
+    private romMaxAddress: number;
+
+    constructor(utilityTerminal: UtilityTerminal, romSize: number) {
+        this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
+    
+        // Assign a terminal
+        this.utilityTerminal = utilityTerminal;
+
         this.assignToPC(0x200); // ROMs start at address 0x200
 
         // Fonts stored in addresses 0x050-0x0A0
@@ -90,6 +105,9 @@ export class CHIP8 {
         for (let i = 0; i < fontsetSize; ++i) {
             this.assignToMemory(fontsetStartAddress + i, this.fontset[i]);
         }
+
+        // Subscribe utility terminal to listen to the inputted changes by the user (breakpoints)
+        this.subscribeToUtilityTerminal();
     };
 
     public listenToPC(listener: (PC: number) => void) {
@@ -162,6 +180,47 @@ export class CHIP8 {
         for (let listener of this.pcAndMemoryListeners) {
             listener(this.PC[0], this.memory);
         }
+    }
+
+    private subscribeToUtilityTerminal = () => {
+        this.utilityTerminal.listenToSetBreakpoint(this.setBreakpoint);
+        this.utilityTerminal.listenToRemoveBreakpoint(this.removeBreakpoint);
+        this.utilityTerminal.listenToClearBreakpoint(this.clearBreakpoint);
+        this.utilityTerminal.listenToShowBreakpoint(this.showBreakpoint);
+        this.utilityTerminal.listenToStep(this.step);
+    }
+
+    private showBreakpoint = () => {
+        return this.breakpoints;
+    }
+
+    private setBreakpoint = (address: number) => {
+        if (address > this.romMaxAddress) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is larger than the ROM's last address 0x${this.romMaxAddress.toString(16)}.`
+        } else if (address < 0x200) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is smaller than the ROM's first address 0x200.`
+        } else {
+            this.breakpoints.add(address - (address % 2));
+            return `Breakpoint set to address 0x${(address - (address % 2)).toString(16)}`;
+        }
+    }
+
+    private removeBreakpoint = (address: number) => {
+        if (address > this.romMaxAddress) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is larger than the ROM's last address 0x${this.romMaxAddress.toString(16)}.`
+        } else if (address < 0x200) {
+            return `Breakpoint not set. Address 0x${address.toString(16)} is smaller than the ROM's first address 0x200.`
+        } else if (this.breakpoints.has(address - (address % 2))) {
+            this.breakpoints.delete(address - (address % 2));
+            return `Breakpoint removed at address 0x${(address - (address % 2)).toString(16)}.`;
+        } else {
+            return `Breakpoint not found.`;
+        }
+    }
+
+    private clearBreakpoint = () => {
+        this.breakpoints.clear();
+        return `Breakpoints have been cleared.`
     }
 
     public getMemory() {
@@ -293,11 +352,22 @@ export class CHIP8 {
             this.stop();
             return;
         }
-
+    
+        if (this.breakpoints.has(this.PC[0])) {  
+            if (this.lastBreakpoint !== this.PC[0]) {
+                console.log(`Breakpoint hit at 0x${this.PC[0].toString(16)}. Execution paused.`);
+                this.lastBreakpoint = this.PC[0];
+                this.stop();
+                return;
+            }
+        } else {
+            this.lastBreakpoint = null; // Reset if PC moved past a breakpoint
+        }
+    
         this.fetch();
         this.decode();
         this.execute();
-    };
+    }
 
     public run(timeout: number = 2) { // Default 500Hz (2ms)
         this.stop(); // Ensure no duplicate intervals
@@ -321,6 +391,14 @@ export class CHIP8 {
         this.runLoop = setInterval(() => {
             this.cycle();
         }, newTimeout);
+    }
+
+    public step = (): number => {
+        if (this.runLoop) return -1; // Prevent stepping while running
+        
+        this.cycle(); // Execute a single instruction
+
+        return this.PC[0];
     }
 
     private clearScreen() {
