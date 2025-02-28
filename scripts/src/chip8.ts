@@ -444,6 +444,7 @@ export class CHIP8 {
             this.assignToMemory(this.fontsetStartAddress + i, this.fontset[i]);
         }
 
+        this.display = Array.from({ length: 32 }, () => Array(64).fill(0));
         this.clearScreen();
     }
 

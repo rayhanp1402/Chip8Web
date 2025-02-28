@@ -104,6 +104,27 @@ export class Disassembler {
         this.subscribeToUtilityTerminal();
     }
 
+    public reset(romSize: number) {
+        // Return to instruction currently pointed by PC
+        this.currentInstructionIndex = 0x200;
+        this.isFollowingPC = true;
+        this.updateInstructionButtonStates();
+
+        // Display initial memory contents (0x000 - 0x03F)
+        this.displayMemoryContents(0);
+        
+        // The loaded ROM last address
+        this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
+
+        // Display initial ROM
+        this.displayInstructionContents(
+            this.currentInstructionIndex, 
+            this.romMaxAddress,
+            this.chip8.getMemory(),
+            this.chip8.getPC()
+        );
+    }
+
     private subscribeToChip8 = () => {
         this.chip8.listenToPC(this.updatePCView);
         this.chip8.listenToSP(this.updateSPView);

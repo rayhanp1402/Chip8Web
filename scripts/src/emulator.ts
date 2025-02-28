@@ -48,6 +48,8 @@ export class Emulator {
         this.chip8.reset(rom.byteLength);
         this.chip8.loadROM(new Uint8Array(rom));
 
+        this.disassembler.reset(rom.byteLength);
+
         romStatusText.innerText = `Loaded '${fileName}' ROM`;
     }
 
