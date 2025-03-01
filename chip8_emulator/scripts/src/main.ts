@@ -10,6 +10,8 @@ const uploadROMInput = document.getElementById("upload-rom") as HTMLInputElement
 
 const loadingOverlay = document.getElementById("loadingOverlay") as HTMLElement;
 
+const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
+
 function loadSavedROM(signed_url: string) {
     fetch(signed_url)
         .then(response => {
@@ -39,8 +41,31 @@ function loadSavedROM(signed_url: string) {
         });
 }
 
+async function listRoms() {
+    // Get the uploaded ROMs list
+    try {
+        romDropdownMenu.innerHTML = ``;
+        const response = await fetch('http://localhost:8080/rom/list');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const roms = await response.json();
+        for (let i = 0; i < roms.length; ++i) {
+            romDropdownMenu.innerHTML += `
+            <li>
+                <a class="dropdown-item" id="dropdown-item-${roms[i].romName}" href="#">${roms[i].romName.replace(/\.ch8$/, "")}</a>
+            </li>`;
+        }
+    } catch (error) {
+        console.error('Error fetching ROMs:', error);
+    }
+}
+
 function main() {
     let emulator: Emulator | null = null;
+
+    // Fetches the uploaded ROMs
+    listRoms();
 
     uploadROMButton.addEventListener("click", function() {
         uploadROMInput.value = ""; // Reset input to allow re-selecting the same file
