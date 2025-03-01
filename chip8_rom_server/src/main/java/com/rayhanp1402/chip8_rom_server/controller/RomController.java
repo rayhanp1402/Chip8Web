@@ -17,7 +17,7 @@ public class RomController {
     private RomService romService;
 
     @RequestMapping("/list")
-    public List<Rom> list() {
+    public List<String> list() {
         return romService.listRoms();
     }
 }

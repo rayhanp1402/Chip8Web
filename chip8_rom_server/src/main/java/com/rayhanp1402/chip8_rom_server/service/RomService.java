@@ -14,7 +14,9 @@ public class RomService {
             new Rom("Tetris.ch8", "rayhanp1402")
     );
 
-    public List<Rom> listRoms() {
-        return this.roms;
+    public List<String> listRoms() {
+        return this.roms.stream()
+                .map(Rom::getRomName)
+                .toList();
     };
 }

@@ -53,7 +53,7 @@ async function listRoms() {
         for (let i = 0; i < roms.length; ++i) {
             romDropdownMenu.innerHTML += `
             <li>
-                <a class="dropdown-item" id="dropdown-item-${roms[i].romName}" href="#">${roms[i].romName.replace(/\.ch8$/, "")}</a>
+                <a class="dropdown-item" id="dropdown-item-${roms[i]}" href="#">${roms[i].replace(/\.ch8$/, "")}</a>
             </li>`;
         }
     } catch (error) {
