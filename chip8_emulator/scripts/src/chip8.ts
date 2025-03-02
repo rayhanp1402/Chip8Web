@@ -381,7 +381,7 @@ export class CHIP8 {
 
     public run(timeout: number = 2) { // Default 500Hz (2ms)
         this.stop(); // Ensure no duplicate intervals
-        this.runLoop = setInterval(() => {
+        this.runLoop = window.setInterval(() => {
             this.cycle();
         }, timeout);
     }
@@ -398,7 +398,7 @@ export class CHIP8 {
         if (!this.runLoop) return;  // Do nothing if not running
     
         clearInterval(this.runLoop);  // Stop current interval
-        this.runLoop = setInterval(() => {
+        this.runLoop = window.setInterval(() => {
             this.cycle();
         }, newTimeout);
     }

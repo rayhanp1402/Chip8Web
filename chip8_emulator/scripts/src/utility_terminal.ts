@@ -56,6 +56,10 @@ export class UtilityTerminal {
         this.setupClipboardHandlers();
     }
 
+    public setUsername(username: string) {
+        this.username = username;
+    }
+ 
     public listenToSetCycle(listener: ((speed: number) => number)) {
         this.setCycleListener = listener;
     }

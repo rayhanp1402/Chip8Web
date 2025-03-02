@@ -8,7 +8,9 @@
     "outDir": "./scripts/out",
     "rootDir": "./scripts/src",
     "noImplicitAny": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["DOM", "ESNext"],  // Ensures browser-based environment
+    "types": []  
   },
   "include": ["scripts/src/**/*"],  // Ensure all TS files are included
   "exclude": ["node_modules", "dist"]

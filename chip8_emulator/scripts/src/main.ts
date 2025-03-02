@@ -63,7 +63,7 @@ async function listRoms() {
 
 function main() {
     let emulator: Emulator | null = null;
-
+    
     // Fetches the uploaded ROMs
     listRoms();
 
@@ -112,6 +112,7 @@ function main() {
             try {
                 if (emulator === null) {
                     emulator = new Emulator(uint8Array, fileName);
+                    emulator.getUtilityTerminal().setUsername("Rayhan");
                 } else {
                     emulator.reset(uint8Array, fileName);
                 }

@@ -53,6 +53,10 @@ export class Emulator {
         romStatusText.innerText = `Loaded '${fileName}' ROM`;
     }
 
+    public getUtilityTerminal() {
+        return this.utilityTerminal;
+    }
+
     private changeCycleIncrement = (value: number) => {
         this.cycleIncrement = value;
     

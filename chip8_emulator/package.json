@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "xterm": "^5.3.0",
     "xterm-addon-fit": "^0.8.0"
   },

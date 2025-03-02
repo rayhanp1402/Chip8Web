@@ -5,29 +5,31 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor
-@Table(name = "user")
-public class User {
+@Table(name = "user_profiles")
+public class UserProfile {
     @Id
-    private String googleId; // Unique Google ID for each user
+    private UUID id;
 
     private String name;
 
     private boolean admin;
 
-    public User(String googleId, String name, boolean admin) {
-        this.googleId = googleId;
+    public UserProfile(UUID id, String name, boolean admin) {
+        this.id = id;
         this.name = name;
         this.admin = admin;
     }
 
-    public String getGoogleId() {
-        return googleId;
+    public UUID getId() {
+        return id;
     }
 
-    public void setGoogleId(String googleId) {
-        this.googleId = googleId;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getName() {
