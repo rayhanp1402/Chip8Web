@@ -62,15 +62,17 @@
                     Select ROM
                 </button>
                 <ul class="dropdown-menu" id="rom-dropdown-menu" aria-labelledby="romDropdown">
-                    <!-- <li><a class="dropdown-item" href="#">IBM Logo</a></li>
-                    <li><a class="dropdown-item" href="#">Tetris</a></li>
-                    <li><a class="dropdown-item" href="#">Space Invaders</a></li> -->
+                    <!-- Will be injected by JS -->
                 </ul>
             </div>
 
             <div class="upload-container">
                 <input type="file" id="upload-rom" class="upload-rom-input" accept=".ch8" hidden>
                 <button class="btn upload-rom-btn" id="upload-rom-button">Upload ROM</button>
+            </div>
+
+            <div class="upload-container">
+                <button class="btn upload-rom-btn" id="save-delete-rom-button">Save/Delete ROM</button>
             </div>
 
             <div class="cycle-setter-container">
@@ -231,6 +233,11 @@
                     </div>
                 </div>
             </div>                      
+        </div>
+
+        <div class="mt-4">
+            <button id="login-button" class="btn auth-btn">Login with Google</button>
+            <button id="logout-button" class="btn auth-btn" >Logout</button>
         </div>
     </div>
 

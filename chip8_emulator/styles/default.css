@@ -475,6 +475,22 @@ pre.memory-address {
     color: #000000;
 }
 
+.auth-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.auth-btn:hover {
+    background: #00FF33;
+    color: #000000;
+}
+
 #loadingOverlay {
     font-family: 'Silkscreen', sans-serif;
     position: fixed;
