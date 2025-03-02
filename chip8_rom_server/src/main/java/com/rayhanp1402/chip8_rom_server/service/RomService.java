@@ -8,13 +8,14 @@ import java.util.List;
 
 @Service
 public class RomService {
-    private List<Rom> roms = Arrays.asList(
+    private final List<Rom> roms = Arrays.asList(
             new Rom("IBM Logo.ch8", "rayhanp1402"),
             new Rom("Space Invaders.ch8", "rayhanp1402"),
             new Rom("Tetris.ch8", "rayhanp1402")
     );
 
     public List<String> listRoms() {
+        // This will only get the ROMs romName instead of with its uploader
         return this.roms.stream()
                 .map(Rom::getRomName)
                 .toList();
