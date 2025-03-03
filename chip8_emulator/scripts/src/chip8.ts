@@ -241,6 +241,11 @@ export class CHIP8 {
         this.notifyPCListeners();
     }
 
+    private addToSP(value: number) {
+        this.SP[0] += value;
+        this.notifySPListeners();
+    }
+
     private assignToSP(value: number) {
         this.SP[0] = value;
         this.notifySPListeners();
@@ -311,22 +316,30 @@ export class CHIP8 {
                         this.clearScreen();
                         break;
                     case 0x0EE:
-                        throw new Error("Opcode not implemented yet.");
+                        this.addToSP(-1);
+                        this.assignToPC(this.stack[this.SP[0]]);
+                        break;
                     default:
-                        throw new Error("Opcode not implemented yet.");
+                        throw new Error(`Opcode 0x${this.instruction[0].toString(16).padStart(4, "0")} not implemented.`);
                 }
                 break;
             case 0x01:
                 this.jumpTo(this.NNN);
                 break;
             case 0x02:
-                throw new Error("Opcode not implemented yet.");
+                this.assignToStack(this.SP[0], this.PC[0]);
+                this.addToSP(1);
+                this.assignToPC(this.NNN[0]);
+                break;
             case 0x03:
-                throw new Error("Opcode not implemented yet.");
+                if (this.V[this.X[0]] === this.NN[0]) this.addToPC(2);
+                break;
             case 0x04:
-                throw new Error("Opcode not implemented yet.");
+                if (this.V[this.X[0]] !== this.NN[0]) this.addToPC(2);
+                break;
             case 0x05:
-                throw new Error("Opcode not implemented yet.");
+                if (this.V[this.X[0]] === this.V[this.Y[0]]) this.addToPC(2);
+                break;
             case 0x06:
                 this.loadRegister(this.X, this.NN);
                 break;
@@ -336,7 +349,8 @@ export class CHIP8 {
             case 0x08:
                 throw new Error("Opcode not implemented yet.");
             case 0x09:
-                throw new Error("Opcode not implemented yet.");
+                if (this.V[this.X[0]] === this.V[this.Y[0]]) this.addToPC(2);
+                break;
             case 0x0A:
                 this.loadIndex(this.NNN);
                 break;
