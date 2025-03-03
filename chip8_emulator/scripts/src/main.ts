@@ -112,7 +112,6 @@ function main() {
             try {
                 if (emulator === null) {
                     emulator = new Emulator(uint8Array, fileName);
-                    emulator.getUtilityTerminal().setUsername("Rayhan");
                 } else {
                     emulator.reset(uint8Array, fileName);
                 }

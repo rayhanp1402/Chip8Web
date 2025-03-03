@@ -46,8 +46,8 @@ export class UtilityTerminal {
     
         this.term.open(xTermContainer);
     
-        this.term.writeln(`Welcome to CHIP-8 Web Emulator, ${this.username}!\n`);
-        this.writeNewline();
+        this.term.writeln(`Welcome to CHIP-8 Web Emulator, ${this.username}!`);
+        this.writeNewPrompt();
     
         // Handle user input
         this.term.onData((data: string) => this.handleInput(data));
@@ -196,10 +196,10 @@ export class UtilityTerminal {
         this.term.write("\r" + " ".repeat(this.term.cols) + "\r");
     
         // Rewrite the prompt and buffer
-        this.term.write(`@${this.username}:$ ${this.buffer}`);
+        this.term.write(`$ ${this.buffer}`);
         
         // Reset cursor position
-        this.term.write(`\r@${this.username}:$ ${this.buffer.slice(0, this.cursorPosition)}`);
+        this.term.write(`\r$ ${this.buffer.slice(0, this.cursorPosition)}`);
     }
     
 
@@ -208,7 +208,7 @@ export class UtilityTerminal {
     
         const tokens = this.tokenizeCommand(this.buffer);
         if (tokens.length === 0) {
-            this.writeNewline();
+            this.writeNewPrompt();
             return;
         }
     
@@ -346,11 +346,15 @@ export class UtilityTerminal {
     
         this.buffer = "";
         this.cursorPosition = 0;
-        this.writeNewline();
+        this.writeNewPrompt();
     }    
 
-    private writeNewline() {
-        this.term.write(`@${this.username}:$ `);
+    private writeNewPrompt() {
+        this.term.writeln("");
+        this.term.write("\x1b[38;2;0;255;51m"); // Sets the color to #00FF33
+        this.term.write(`${this.username}`);
+        this.term.writeln(`\x1b[0m`); // Resets the color to default
+        this.term.write(`$ `);
     }
 
     private setupClipboardHandlers() {
