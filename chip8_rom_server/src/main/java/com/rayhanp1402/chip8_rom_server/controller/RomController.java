@@ -16,7 +16,7 @@ public class RomController {
     @Autowired
     private RomService romService;
 
-    @GetMapping("/list")
+    @GetMapping("/public/list")
     public List<String> list() {
         return romService.listRoms();
     }

@@ -2,6 +2,7 @@ import { Disassembler } from "./disassembler";
 import { Emulator } from "./emulator";
 import { UtilityTerminal } from "./utility_terminal";
 import { CHIP8 } from "./chip8";
+import { signInWithGoogle, signOut } from "./auth";
 
 declare const bootstrap: any;
 
@@ -12,11 +13,14 @@ const loadingOverlay = document.getElementById("loadingOverlay") as HTMLElement;
 
 const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
 
+const loginButton = document.getElementById("login-button") as HTMLButtonElement;
+const logoutButton = document.getElementById("logout-button") as HTMLButtonElement;
+
 async function listRoms() {
     // Get the uploaded ROMs list
     try {
         romDropdownMenu.innerHTML = ``;
-        const response = await fetch('http://localhost:8080/rom/list');
+        const response = await fetch('http://localhost:8080/rom/public/list');
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -37,6 +41,16 @@ function main() {
     
     // Fetches the uploaded ROMs
     listRoms();
+
+    // Handle login
+    loginButton.addEventListener("click", async () => {
+        await signInWithGoogle();
+    });
+
+    // Handle logout
+    logoutButton.addEventListener("click", async () => {
+        await signOut();
+    });
 
     uploadROMButton.addEventListener("click", function() {
         uploadROMInput.value = ""; // Reset input to allow re-selecting the same file

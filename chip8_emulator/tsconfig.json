@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["DOM", "ESNext"],  // Ensures browser-based environment
-    "types": []  
+    "types": ["vite/client"]  
   },
   "include": ["scripts/src/**/*"],  // Ensure all TS files are included
   "exclude": ["node_modules", "dist"]
