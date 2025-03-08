@@ -1,13 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
+export const SUPABASE = createClient(
     import.meta.env.VITE_SUPABASE_URL!,
     import.meta.env.VITE_SUPABASE_ANON_KEY!
 );
 
 export async function signInWithGoogle() {
-    console.log("Sign in attempted");
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await SUPABASE.auth.signInWithOAuth({
         provider: 'google',
         options: {
             redirectTo: window.location.origin,
@@ -18,9 +17,7 @@ export async function signInWithGoogle() {
 }
 
 export async function signOut() {
-    console.log("Sign out attempted");
-
-    const { error } = await supabase.auth.signOut();
+    const { error } = await SUPABASE.auth.signOut();
     if (error) { 
         console.error("Logout failed:", error.message);
     } else {

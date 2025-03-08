@@ -3,6 +3,7 @@ import { Emulator } from "./emulator";
 import { UtilityTerminal } from "./utility_terminal";
 import { CHIP8 } from "./chip8";
 import { signInWithGoogle, signOut } from "./auth";
+import { SUPABASE } from "./auth";
 
 declare const bootstrap: any;
 
@@ -36,11 +37,26 @@ async function listRoms() {
     }
 }
 
-function main() {
+async function main() {
     let emulator: Emulator | null = null;
+    let username = "Guest";
+    let email = "Guest";
     
     // Fetches the uploaded ROMs
     listRoms();
+
+    const { data, error } = await SUPABASE.auth.getUser();
+
+    if (error) {
+        console.error("Error fetching user:", error.message);
+    } else if (data?.user) {
+        const { email: userEmail, user_metadata } = data.user;
+        username = user_metadata?.full_name || "User";
+        email = userEmail ?? "User";
+        console.log("Logged in as:", username, email);
+    } else {
+        console.log("Not logged in");
+    }
 
     // Handle login
     loginButton.addEventListener("click", async () => {
@@ -96,7 +112,7 @@ function main() {
 
             try {
                 if (emulator === null) {
-                    emulator = new Emulator(uint8Array, fileName);
+                    emulator = new Emulator(uint8Array, fileName, username, email);
                 } else {
                     emulator.reset(uint8Array, fileName);
                 }

@@ -5,6 +5,7 @@ const xTermContainer = document.getElementById("xterm-container") as HTMLElement
 
 export class UtilityTerminal {
     private username = "Guest";
+    private email = "Guest";
     private term: Terminal;
     private lineLimit = 50;
     private buffer = ""; // Stores the current input line
@@ -32,7 +33,10 @@ export class UtilityTerminal {
         " "
     ]);
 
-    constructor() {
+    constructor(username: string, email: string) {
+        this.username = username;
+        this.email = email;
+
         this.term = new Terminal({
             cursorBlink: true,
             theme: {
@@ -56,10 +60,6 @@ export class UtilityTerminal {
         this.setupClipboardHandlers();
     }
 
-    public setUsername(username: string) {
-        this.username = username;
-    }
- 
     public listenToSetCycle(listener: ((speed: number) => number)) {
         this.setCycleListener = listener;
     }
@@ -352,7 +352,7 @@ export class UtilityTerminal {
     private writeNewPrompt() {
         this.term.writeln("");
         this.term.write("\x1b[38;2;0;255;51m"); // Sets the color to #00FF33
-        this.term.write(`${this.username}`);
+        this.term.write(`${this.email}`);
         this.term.writeln(`\x1b[0m`); // Resets the color to default
         this.term.write(`$ `);
     }

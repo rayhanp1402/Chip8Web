@@ -24,8 +24,8 @@ export class Emulator {
     private disassembler: Disassembler;
     private utilityTerminal: UtilityTerminal;
 
-    constructor(rom: Uint8Array, fileName: string) {
-        this.utilityTerminal = new UtilityTerminal();
+    constructor(rom: Uint8Array, fileName: string, username: string, email: string) {
+        this.utilityTerminal = new UtilityTerminal(username, email);
         this.chip8 = new CHIP8(this.utilityTerminal, rom.byteLength);
         this.chip8.loadROM(new Uint8Array(rom));        
         this.disassembler = new Disassembler(this.chip8, rom.byteLength, this.utilityTerminal);
@@ -51,10 +51,6 @@ export class Emulator {
         this.disassembler.reset(rom.byteLength);
 
         romStatusText.innerText = `Loaded '${fileName}' ROM`;
-    }
-
-    public getUtilityTerminal() {
-        return this.utilityTerminal;
     }
 
     private changeCycleIncrement = (value: number) => {
