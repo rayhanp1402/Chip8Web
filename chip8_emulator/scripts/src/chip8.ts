@@ -102,9 +102,6 @@ export class CHIP8 {
     private romMaxAddress: number;
 
     constructor(utilityTerminal: UtilityTerminal, romSize: number) {
-        this.assignToDelay(2000);
-        this.assignToSound(500);
-
         this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
     
         // Assign a terminal
@@ -323,6 +320,11 @@ export class CHIP8 {
         this.notifyIndexListeners();
     }
 
+    private addToIndex(value: number) {
+        this.I[0] += value;
+        this.notifyIndexListeners();
+    }
+
     private assignToV(order: number, value: number) {
         // Order means the V registers index/number (0-F or 0-15)
         this.V[order] = value;
@@ -518,11 +520,40 @@ export class CHIP8 {
                     case 0x07:
                         this.assignToV(this.X[0], this.delay[0]);
                         break;
+                    case 0x0A:
+                        this.waitForKeyPress(this.X[0]);
+                        break;
                     case 0x15:
                         this.assignToDelay(this.V[this.X[0]]);
                         break;
                     case 0x18:
                         this.assignToSound(this.V[this.X[0]]);
+                        break;
+                    case 0x1E:
+                        this.addToIndex(this.V[this.X[0]]);
+                        break;
+                    case 0x29:
+                        // Index is set to the location of sprite for digit Vx
+                        this.assignToIndex(this.fontsetStartAddress + (5 * this.V[this.X[0]]));
+                        break;
+                    case 0x33:
+                        // takes the decimal value of Vx, and places the hundreds digit in memory at location in I,
+                        // the tens digit at location I+1, and the ones digit at location I+2.
+                        let decimalValue = this.V[this.X[0]];
+
+                        this.assignToMemory(this.I[0], Math.floor(decimalValue / 100));             // Hundreds-place
+                        this.assignToMemory(this.I[0] + 1, Math.floor((decimalValue / 10) % 10));   // Tens-place
+                        this.assignToMemory(this.I[0] + 2, decimalValue % 10);                      // Ones-place
+                        break;
+                    case 0x55:
+                        for (let i = 0; i <= this.X[0]; ++i) {
+                            this.assignToMemory(this.I[0] + i, this.V[i]);
+                        }
+                        break;
+                    case 0x65:
+                        for (let i = 0; i <= this.X[0]; ++i) {
+                            this.assignToV(i, this.memory[this.I[0] + i]);
+                        }
                         break;
                 }
                 break;
@@ -722,6 +753,17 @@ export class CHIP8 {
             };
         };
     };
+
+    private waitForKeyPress(registerOrder: number) {
+        // Note that the timers are still decremented
+        for (let i = 0; i < this.keys.length; ++i) {
+            if (this.keys[i]) {
+                this.assignToV(registerOrder, i);
+                return;
+            }
+        }
+        this.addToPC(-2);
+    }
 
     private randomIntFromInterval(min: number, max: number) { // Inclusive 
         return Math.floor(Math.random() * (max - min + 1) + min);
