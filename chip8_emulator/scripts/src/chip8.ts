@@ -407,9 +407,12 @@ export class CHIP8 {
                 this.loadIndex(this.NNN);
                 break;
             case 0x0B:
-                throw new Error("Opcode not implemented yet.");
+                this.assignToPC(this.NNN[0] + this.V[0x0]);
+                break;
             case 0x0C:
-                throw new Error("Opcode not implemented yet.");
+                const randomNumber = this.randomIntFromInterval(0, 255);
+                this.assignToV(this.X[0], randomNumber & this.NN[0]);
+                break;
             case 0x0D:
                 this.draw(this.X, this.Y, this.N);
                 break;
@@ -582,5 +585,9 @@ export class CHIP8 {
                 }
             };
         };
+    };
+
+    private randomIntFromInterval(min: number, max: number) { // Inclusive 
+        return Math.floor(Math.random() * (max - min + 1) + min);
     };
 };
