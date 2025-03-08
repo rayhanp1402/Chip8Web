@@ -347,7 +347,59 @@ export class CHIP8 {
                 this.addRegister(this.X, this.NN);
                 break;
             case 0x08:
-                throw new Error("Opcode not implemented yet.");
+                switch(this.N[0]) {
+                    case 0x0:
+                        this.assignToV(this.X[0], this.V[this.Y[0]]);
+                        break;
+                    case 0x1:
+                        const vxOrvy = this.V[this.X[0]] | this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vxOrvy);
+                        break;
+                    case 0x2:
+                        const vxAndvy = this.V[this.X[0]] & this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vxAndvy);
+                        break;
+                    case 0x3:
+                        const vxXorvy = this.V[this.X[0]] ^ this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vxXorvy);
+                        break;
+                    case 0x4:
+                        const vxAddvy = this.V[this.X[0]] + this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vxAddvy);
+
+                        if (vxAddvy > 0xFF) {   // Greater than 8 bits (> 255 in base-10)
+                            this.assignToV(0xF, 1);
+                        } else {
+                            this.assignToV(0xF, 0);
+                        }
+
+                        break;
+                    case 0x5:
+                        if (this.V[this.X[0]] > this.V[this.Y[0]]) {
+                            this.assignToV(0xF, 1);
+                        } else {
+                            this.assignToV(0xF, 0);
+                        }
+
+                        const vxSubvy = this.V[this.X[0]] - this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vxSubvy);
+                        break;
+                    case 0x6:
+                        this.V[0xF] = this.V[this.X[0] & 0x1];  // Put the LSB of Vx in the flag register
+                        this.assignToV(this.X[0], this.V[this.X[0]] >> 1);
+                        break;
+                    case 0x7:
+                        if (this.V[this.Y[0]] > this.V[this.X[0]]) {
+                            this.assignToV(0xF, 1);
+                        } else {
+                            this.assignToV(0xF, 0);
+                        }
+
+                        const vySubvx = this.V[this.Y[0]] - this.V[this.X[0]];
+                        this.assignToV(this.X[0], vySubvx);
+                        break;
+                }
+                break;
             case 0x09:
                 if (this.V[this.X[0]] === this.V[this.Y[0]]) this.addToPC(2);
                 break;
