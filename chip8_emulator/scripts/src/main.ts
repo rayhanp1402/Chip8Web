@@ -12,35 +12,6 @@ const loadingOverlay = document.getElementById("loadingOverlay") as HTMLElement;
 
 const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
 
-function loadSavedROM(signed_url: string) {
-    fetch(signed_url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch ROM: ${response.status} ${response.statusText}`);
-            }
-
-            // 1️⃣ Try to get filename from Content-Disposition header
-            const contentDisposition = response.headers.get("Content-Disposition");
-            let fileName = "unknown.rom"; // Default fallback filename
-
-            if (contentDisposition) {
-                const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                if (match) {
-                    fileName = match[1];
-                }
-            } else {
-                fileName = "unnamed";
-            }
-
-            return response.arrayBuffer().then(buffer => {
-                const emulator = new Emulator(new Uint8Array(buffer), fileName);
-            });
-        })
-        .catch(error => {
-            console.error("Error loading ROM:", error);
-        });
-}
-
 async function listRoms() {
     // Get the uploaded ROMs list
     try {

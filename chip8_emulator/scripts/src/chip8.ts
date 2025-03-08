@@ -38,12 +38,14 @@ export class CHIP8 {
     private NNN = new Uint16Array(1);           // Second, third, and fourth nibbles
 
     // Keypads, using KeyboardEvent codes
-    private keyMap = {
+    private keyMap: Record<string, number> = {
         "Digit1": 0x1, "Digit2": 0x2, "Digit3": 0x3, "Digit4": 0xC,
         "KeyQ": 0x4, "KeyW": 0x5, "KeyE": 0x6, "KeyR": 0xD,
         "KeyA": 0x7, "KeyS": 0x8, "KeyD": 0x9, "KeyF": 0xE,
         "KeyZ": 0xA, "KeyX": 0x0, "KeyC": 0xB, "KeyV": 0xF
     };
+
+    private keys: boolean[] = new Array(16).fill(false);
 
     // Fonts
     private fontset = [
@@ -105,6 +107,42 @@ export class CHIP8 {
         for (let i = 0; i < this.fontsetSize; ++i) {
             this.assignToMemory(this.fontsetStartAddress + i, this.fontset[i]);
         }
+
+        // Detects user pressed keys
+        document.addEventListener("keydown", (event) => {
+            const key = this.keyMap[event.code];
+            if (key !== undefined) {
+                this.keys[key] = true;
+            }
+        });
+        
+        document.addEventListener("keyup", (event) => {
+            const key = this.keyMap[event.code];
+            if (key !== undefined) {
+                this.keys[key] = false;
+            }
+        });
+
+        // The same as above, this time with the clicked buttons on the screen
+        document.querySelectorAll(".key").forEach((button) => {
+            button.addEventListener("mousedown", () => {
+                const keyHex = button.id.replace("key_", ""); // Extract the key identifier
+                const keyValue = parseInt(keyHex, 16); // Convert it to a hex number (0-15)
+
+                if (!isNaN(keyValue)) {
+                    this.keys[keyValue] = true;
+                }
+            });
+
+            button.addEventListener("mouseup", () => {
+                const keyHex = button.id.replace("key_", "");
+                const keyValue = parseInt(keyHex, 16);
+
+                if (!isNaN(keyValue)) {
+                    this.keys[keyValue] = false;
+                }
+            });
+        });
 
         // Subscribe utility terminal to listen to the inputted changes by the user (breakpoints)
         this.subscribeToUtilityTerminal();
@@ -417,7 +455,15 @@ export class CHIP8 {
                 this.draw(this.X, this.Y, this.N);
                 break;
             case 0x0E:
-                throw new Error("Opcode not implemented yet.");
+                switch(this.NN[0]) {
+                    case 0x9E:
+                        if (this.keys[this.V[this.X[0]]]) this.addToPC(2);
+                        break;
+                    case 0xA1:
+                        if (!this.keys[this.V[this.X[0]]]) this.addToPC(2);
+                        break;
+                }
+                break;
             case 0x0F:
                 throw new Error("Opcode not implemented yet.");
             default:
@@ -515,6 +561,8 @@ export class CHIP8 {
 
         this.display = Array.from({ length: 32 }, () => Array(64).fill(0));
         this.clearScreen();
+
+        this.keys.fill(false);
     }
 
     private clearScreen() {
