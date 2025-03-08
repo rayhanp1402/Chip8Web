@@ -464,28 +464,34 @@ export class CHIP8 {
 
                         break;
                     case 0x5:
-                        if (this.V[this.X[0]] > this.V[this.Y[0]]) {
+                        const vxSubvy = this.V[this.X[0]] - this.V[this.Y[0]];
+                        const vx_5 = this.V[this.X[0]];
+                        const vy_5 = this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vxSubvy);
+                        
+                        if (vx_5 >= vy_5) {
                             this.assignToV(0xF, 1);
                         } else {
                             this.assignToV(0xF, 0);
                         }
 
-                        const vxSubvy = this.V[this.X[0]] - this.V[this.Y[0]];
-                        this.assignToV(this.X[0], vxSubvy);
                         break;
                     case 0x6:
                         this.assignToV(0xF, this.V[this.X[0]] & 0x1);  // Put the LSB of Vx in the flag register
                         this.assignToV(this.X[0], this.V[this.X[0]] >> 1);
                         break;
                     case 0x7:
-                        if (this.V[this.Y[0]] > this.V[this.X[0]]) {
+                        const vySubvx = this.V[this.Y[0]] - this.V[this.X[0]];
+                        const vx_7 = this.V[this.X[0]];
+                        const vy_7 = this.V[this.Y[0]];
+                        this.assignToV(this.X[0], vySubvx);
+
+                        if (vy_7 >= vx_7) {
                             this.assignToV(0xF, 1);
                         } else {
                             this.assignToV(0xF, 0);
                         }
 
-                        const vySubvx = this.V[this.Y[0]] - this.V[this.X[0]];
-                        this.assignToV(this.X[0], vySubvx);
                         break;
                     case 0xE:
                         this.assignToV(0xF, (this.V[this.X[0]] & 0x80) >> 7);  // Put the MSB of Vx in the flag register
