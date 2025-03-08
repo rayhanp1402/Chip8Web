@@ -21,6 +21,9 @@ const instructionUpButton = document.getElementById("instruction-up-button") as 
 const instructionDownButton = document.getElementById("instruction-down-button") as HTMLButtonElement;
 const followPCButton = document.getElementById("follow-pc-button") as HTMLButtonElement;
 
+const delayContentView = document.getElementById("delay-content-view") as HTMLElement;
+const soundContentView = document.getElementById("sound-content-view") as HTMLElement;
+
 export class Disassembler {
     private currentMemoryStartIndex = 0;
     private currentInstructionIndex = 0x200;
@@ -133,6 +136,8 @@ export class Disassembler {
         this.chip8.listenToStack(this.updateStackView);
         this.chip8.listenToMemory(this.updateMemoryView);
         this.chip8.listenToPCAndMemory(this.updateInstructionView);
+        this.chip8.listenToDelay(this.updateDelayView);
+        this.chip8.listenToSound(this.updateSoundView);
     }
 
     private subscribeToUtilityTerminal = () => {
@@ -176,6 +181,14 @@ export class Disassembler {
     private updateInstructionView = (PC: number) => {
         if (this.isFollowingPC) this.currentInstructionIndex = PC;
         this.displayInstructionContents(this.currentInstructionIndex, this.romMaxAddress, this.chip8.getMemory(), PC);
+    }
+
+    private updateDelayView = (delay: number) => {
+        delayContentView.innerText = `Delay: ${delay.toString(10)}`;
+    }
+
+    private updateSoundView = (sound: number) => {
+        soundContentView.innerText = `Sound: ${sound.toString(10)}`;
     }
 
     private goToMemoryView = (address: number) => {

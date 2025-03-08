@@ -89,6 +89,8 @@ export class CHIP8 {
     private stackListeners: ((stack: Uint16Array) => void)[] = [];
     private memoryListeners: ((updatedAtIndex: number) => void)[] = [];
     private pcAndMemoryListeners: ((PC: number, memory: Uint8Array) => void)[] = [];
+    private delayListeners: ((delay: number) => void)[] = [];
+    private soundListeners: ((sound: number) => void)[] = [];
 
     // Terminal feature
     private utilityTerminal: UtilityTerminal;
@@ -100,7 +102,8 @@ export class CHIP8 {
     private romMaxAddress: number;
 
     constructor(utilityTerminal: UtilityTerminal, romSize: number) {
-        this.sound[0] = 50;
+        this.assignToDelay(2000);
+        this.assignToSound(500);
 
         this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
     
@@ -182,6 +185,14 @@ export class CHIP8 {
         this.pcAndMemoryListeners.push(listener);
     }
 
+    public listenToDelay(listener: ((delay: number) => void)) {
+        this.delayListeners.push(listener);
+    }
+
+    public listenToSound(listener: ((sound: number) => void)) {
+        this.soundListeners.push(listener);
+    }
+
     private notifyPCListeners() {
         for (let listener of this.pcListeners) {
             listener(this.PC[0]);
@@ -223,6 +234,18 @@ export class CHIP8 {
 
         for (let listener of this.pcAndMemoryListeners) {
             listener(this.PC[0], this.memory);
+        }
+    }
+
+    private notifyDelayListeners() {
+        for (let listener of this.delayListeners) {
+            listener(this.delay[0]);
+        }
+    }
+
+    private notifySoundListeners() {
+        for (let listener of this.soundListeners) {
+            listener(this.sound[0]);
         }
     }
 
@@ -320,6 +343,26 @@ export class CHIP8 {
     private assignToStack(index: number, value: number) {
         this.stack[index] = value;
         this.notifyStackListeners();
+    }
+
+    private assignToDelay(value: number) {
+        this.delay[0] = value;
+        this.notifyDelayListeners();
+    }
+
+    private addToDelay(value: number) {
+        this.delay[0] += value;
+        this.notifyDelayListeners();
+    }
+
+    private addToSound(value: number) {
+        this.sound[0] += value;
+        this.notifySoundListeners();
+    }
+
+    private assignToSound(value: number) {
+        this.sound[0] = value;
+        this.notifySoundListeners();
     }
 
     public loadROM(romData: Uint8Array) {
@@ -476,10 +519,10 @@ export class CHIP8 {
                         this.assignToV(this.X[0], this.delay[0]);
                         break;
                     case 0x15:
-                        this.delay[0] = this.V[this.X[0]];
+                        this.assignToDelay(this.V[this.X[0]]);
                         break;
                     case 0x18:
-                        this.sound[0] = this.V[this.X[0]];
+                        this.assignToSound(this.V[this.X[0]]);
                         break;
                 }
                 break;
@@ -555,11 +598,11 @@ export class CHIP8 {
 
     private updateTimers() {
         if (this.delay[0] > 0) {
-            this.delay[0]--;
+            this.addToDelay(-1);
         }
     
         if (this.sound[0] > 0) {
-            this.sound[0]--;
+            this.addToSound(-1);
             if (this.sound[0] === 0) {
                 stopAudio();
             } else {
@@ -605,6 +648,9 @@ export class CHIP8 {
         this.clearScreen();
 
         this.keys.fill(false);
+
+        this.assignToDelay(0);
+        this.assignToSound(0);
     }
 
     private clearScreen() {

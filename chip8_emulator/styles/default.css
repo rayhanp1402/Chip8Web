@@ -220,7 +220,7 @@ pre.memory-address {
     min-width: 120px; /* Ensure items don't get too small */
 }
 
-.special-registers-output {
+.special-registers-and-timers-output {
     display: grid;
     color: white;
     gap: 20px;

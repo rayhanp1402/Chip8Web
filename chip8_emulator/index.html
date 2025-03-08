@@ -141,7 +141,7 @@
                     </h2>
                     <div id="collapseSpecialRegisters" class="accordion-collapse collapse">
                         <div class="accordion-body">
-                            <div class="special-registers-output">
+                            <div class="special-registers-and-timers-output">
                                 <pre class="disassembler-content" id="pc-content-view">PC: 0x0000</pre>
                                 <pre class="disassembler-content" id="sp-content-view">SP: 0x00</pre>
                                 <pre class="disassembler-content" id="index-content-view">Index: 0x0000</pre>
@@ -177,6 +177,24 @@
                                 <pre class="disassembler-content stack-elements">13: 0x0000</pre>
                                 <pre class="disassembler-content stack-elements">14: 0x0000</pre>
                                 <pre class="disassembler-content stack-elements">15: 0x0000</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion mt-3" id="timersAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTimers">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTimers">
+                            Timers
+                        </button>
+                    </h2>
+                    <div id="collapseTimers" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="special-registers-and-timers-output">
+                                <pre class="disassembler-content" id="delay-content-view">Delay: 0</pre>
+                                <pre class="disassembler-content" id="sound-content-view">Sound: 0</pre>
                             </div>
                         </div>
                     </div>
