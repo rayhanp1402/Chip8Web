@@ -1,5 +1,6 @@
 import { OFF_COLOR, PIXEL_WIDTH, PIXEL_HEIGHT, CONTEXT, ON_COLOR } from "./screen.js";
 import { UtilityTerminal } from "./utility_terminal.js";
+import { playAudio, stopAudio } from "./audio.js";
 
 export class CHIP8 {
     // 16 8-bit Registers (V0 to VF)
@@ -77,6 +78,9 @@ export class CHIP8 {
     // ID for CPU cycle interval
     private runLoop: number | null = null;
 
+    // ID for Timers cycle interval
+    private timerLoop: number | null = null;
+
     // Listeners to update of CHIP8 registers and memory
     private pcListeners: ((PC: number) => void)[] = [];
     private spListeners: ((SP: number) =>void)[] = [];
@@ -96,6 +100,8 @@ export class CHIP8 {
     private romMaxAddress: number;
 
     constructor(utilityTerminal: UtilityTerminal, romSize: number) {
+        this.sound[0] = 50;
+
         this.romMaxAddress = (romSize === 0) ? 0x200 : 0x200 + (romSize - 1);
     
         // Assign a terminal
@@ -465,7 +471,18 @@ export class CHIP8 {
                 }
                 break;
             case 0x0F:
-                throw new Error("Opcode not implemented yet.");
+                switch(this.NN[0]) {
+                    case 0x07:
+                        this.assignToV(this.X[0], this.delay[0]);
+                        break;
+                    case 0x15:
+                        this.delay[0] = this.V[this.X[0]];
+                        break;
+                    case 0x18:
+                        this.sound[0] = this.V[this.X[0]];
+                        break;
+                }
+                break;
             default:
                 throw new Error("Opcode not found!");
         };
@@ -499,6 +516,11 @@ export class CHIP8 {
         this.runLoop = window.setInterval(() => {
             this.cycle();
         }, timeout);
+
+        // Fixed 60Hz timer loop for delay and sound timers
+        this.timerLoop = window.setInterval(() => {
+            this.updateTimers();
+        }, 1000 / 60);
     }
 
     public stop() {
@@ -506,6 +528,11 @@ export class CHIP8 {
             clearInterval(this.runLoop);
             this.runLoop = null;  // Prevent accidental re-clearing
             console.log("Execution stopped.");
+        }
+
+        if (this.timerLoop) {
+            clearInterval(this.timerLoop);
+            this.timerLoop = null;
         }
     }
 
@@ -524,6 +551,21 @@ export class CHIP8 {
         this.cycle(); // Execute a single instruction
 
         return this.PC[0];
+    }
+
+    private updateTimers() {
+        if (this.delay[0] > 0) {
+            this.delay[0]--;
+        }
+    
+        if (this.sound[0] > 0) {
+            this.sound[0]--;
+            if (this.sound[0] === 0) {
+                stopAudio();
+            } else {
+                playAudio();
+            }
+        }
     }
 
     public reset(romSize: number) {
