@@ -575,3 +575,102 @@ pre.memory-address {
     border-radius: 50%;
     cursor: pointer;
 }
+
+#romModal .modal-content {
+    background: #111;
+    color: #33FF66; 
+    border: 2px solid #00FF33;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 51, 0.5);
+}
+
+#romModal .modal-header,
+#romModal .modal-footer {
+    border-color: #00FF33;
+    background: #0a0a0a;
+}
+
+#romModal .modal-title {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #33FF66; 
+    text-shadow: 1px 1px 4px rgba(0, 255, 51, 0.7);
+}
+
+#romModal .table {
+    color: #33FF66; 
+    background: #111;
+}
+
+#romModal thead {
+    background: #00FF33;
+    color: #000;
+    font-family: 'Silkscreen', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#romModal th, 
+#romModal td {
+    padding: 10px;
+    border-bottom: 2px solid rgba(0, 255, 51, 0.3);
+    background: #111 !important;
+    color: #33FF66 !important; 
+    text-shadow: 1px 1px 2px rgba(0, 255, 51, 0.6);
+}
+
+#romModal .modal-footer .btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000;
+    color: #33FF66;
+    border: 2px solid #00FF33;
+    padding: 8px 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    border-radius: 5px;
+}
+
+#romModal .modal-footer .btn:hover {
+    background: #00FF33;
+    color: #000;
+    box-shadow: 0 0 8px rgba(0, 255, 51, 0.6);
+}
+
+#romModal .form-check-input {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #00FF33;
+    background-color: transparent;
+    appearance: none;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+#romModal .form-check-input:checked {
+    background-color: #00FF33;
+    border-color: #00FF33;
+    box-shadow: 0 0 6px rgba(0, 255, 51, 0.7);
+}
+
+#romModal .form-check-input:hover {
+    border-color: #33FF66;
+    box-shadow: 0 0 6px rgba(51, 255, 102, 0.5);
+}
+
+#romModal .form-check-input:focus {
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 255, 51, 0.8);
+}
+
+#romModal .btn-close {
+    filter: invert(100%);
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#romModal .btn-close:hover {
+    opacity: 1;
+}
