@@ -54,8 +54,12 @@ async function main() {
         username = user_metadata?.full_name || "User";
         email = userEmail ?? "User";
         console.log("Logged in as:", username, email);
+
+        loginButton.style.display = "none";
+        logoutButton.style.display = "block";
     } else {
-        console.log("Not logged in");
+        loginButton.style.display = "block";
+        logoutButton.style.display = "none";
     }
 
     // Handle login

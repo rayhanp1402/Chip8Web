@@ -13,7 +13,9 @@ export async function signInWithGoogle() {
         },
     });
 
-    if (error) console.error("Login failed:", error.message);
+    if (error) { 
+        console.error("Login failed:", error.message) 
+    }
 }
 
 export async function signOut() {
