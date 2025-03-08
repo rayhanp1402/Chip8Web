@@ -685,7 +685,6 @@ export class CHIP8 {
             this.assignToMemory(this.fontsetStartAddress + i, this.fontset[i]);
         }
 
-        this.display = Array.from({ length: 32 }, () => Array(64).fill(0));
         this.clearScreen();
 
         this.keys.fill(false);
@@ -695,6 +694,8 @@ export class CHIP8 {
     }
 
     private clearScreen() {
+        this.display = Array.from({ length: 32 }, () => Array(64).fill(0));
+
         if (!CONTEXT) {
             throw new Error("Context not found!");
         }
