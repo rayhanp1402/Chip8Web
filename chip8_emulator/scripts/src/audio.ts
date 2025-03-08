@@ -1,6 +1,11 @@
+import { ON_COLOR, OFF_COLOR } from "./screen";
+
+const volumeSlider = document.getElementById("volume-slider") as HTMLInputElement;
+
 let oscillator: OscillatorNode | null = null;
 const audioContext: AudioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 const gainNode: GainNode = audioContext.createGain();
+gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Default 30% volume
 gainNode.connect(audioContext.destination);
 
 export function playAudio() {
@@ -20,3 +25,15 @@ export function stopAudio() {
         oscillator = null;
     }
 }
+
+// Handle volume slider changes
+volumeSlider.addEventListener("input", (event) => {
+    const volume = parseFloat((event.target as HTMLInputElement).value);
+    
+    gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+
+    const sliderPc = (parseFloat(volumeSlider.value) - parseFloat(volumeSlider.min)) / 
+                     (parseFloat(volumeSlider.max) - parseFloat(volumeSlider.min)) * 100;
+    
+    volumeSlider.style.background = `linear-gradient(to right,${ON_COLOR} ${sliderPc}%, ${OFF_COLOR} ${sliderPc}%)`;
+});
