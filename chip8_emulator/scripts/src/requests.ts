@@ -6,6 +6,8 @@ romDropdownMenu.innerHTML = ``;
 const deleteRomList = document.getElementById("delete-rom-list") as HTMLElement;
 deleteRomList.innerHTML = ``;
 
+const confirmDeleteRomButton = document.getElementById("confirm-delete-rom-button") as HTMLButtonElement;
+
 export async function listPublicRoms() {
     try {
         // Fetch ROM list
@@ -44,6 +46,11 @@ export async function listPersonalRoms(userId: string, token: string) {
         }
 
         const roms = await response.json();
+
+        if (roms.length > 0) {
+            confirmDeleteRomButton.removeAttribute("disabled");
+        }
+
         let i = 0;
         roms.forEach((rom: { id: { romName: string } }) => {
             romDropdownMenu.innerHTML += `
