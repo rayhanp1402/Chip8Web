@@ -49,7 +49,6 @@ async function main() {
         console.error("Error fetching session:", sessionError.message);
     } else {
         token = sessionData.session?.access_token || "";
-        console.log("JWT Token:", token);
     }
 
     // Handle login

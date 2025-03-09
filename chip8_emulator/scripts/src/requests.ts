@@ -1,4 +1,5 @@
 import { showErrorModal } from "./ui_utils";
+import Swal from "sweetalert2";
 
 const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
 
@@ -28,20 +29,56 @@ export async function listRoms() {
 }
 
 export async function saveRom(id: string, name: string, token: string) {
-    const userId = id;
-    const romName = name;
+    try {
+        const response = await fetch("http://localhost:8080/rom/save", {
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: id, romName: name })
+        });
 
-    console.log(token);
+        const message = await response.text();
 
-    const response = await fetch("http://localhost:8080/rom/save", {
-        method: "POST",
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: id, romName: name })
-    });
+        if (response.status === 401) {
+            Swal.fire({
+                icon: "warning",
+                title: "Unauthorized",
+                text: "You must log in first to save a ROM.",
+                confirmButtonColor: "#3085d6",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.reload;
+                }
+            });
+            return;
+        }
 
-    const message = await response.text();
-    showErrorModal("Save ROM", message);
+        if (!response.ok) {
+            Swal.fire({
+                icon: "error",
+                title: "Error Saving ROM",
+                text: message,
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: message,
+            confirmButtonColor: "#3085d6",
+        });
+
+    } catch (error) {
+        console.error(error);
+        Swal.fire({
+            icon: "error",
+            title: "Network Error",
+            text: "Failed to save ROM.",
+            confirmButtonColor: "#d33",
+        });
+    }
 }
