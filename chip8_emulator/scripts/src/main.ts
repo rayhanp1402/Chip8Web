@@ -1,69 +1,17 @@
 import { Emulator } from "./emulator";
 import { signInWithGoogle, signOut } from "./auth";
 import { SUPABASE } from "./auth";
-
-declare const bootstrap: any;
+import { showErrorModal, showEmulatorErrorModal, showLoading, hideLoading } from "./ui_utils";
+import { listRoms, saveRom } from "./requests";
 
 const uploadROMButton = document.getElementById("upload-rom-button") as HTMLButtonElement;
 const uploadROMInput = document.getElementById("upload-rom") as HTMLInputElement;
-
-const loadingOverlay = document.getElementById("loadingOverlay") as HTMLElement;
-
-const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
 
 const loginButton = document.getElementById("login-button") as HTMLButtonElement;
 const logoutButton = document.getElementById("logout-button") as HTMLButtonElement;
 
 const saveROMButton = document.getElementById("save-rom-button") as HTMLButtonElement;
 const saveROMInput = document.getElementById("save-rom") as HTMLButtonElement;
-
-const loadingText = document.getElementById("loading-text") as HTMLElement;
-
-async function listRoms() {
-    try {
-        romDropdownMenu.innerHTML = ``;
-
-        // Fetch ROM list
-        const response = await fetch('http://localhost:8080/rom/public/list');
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const roms = await response.json();
-
-        roms.forEach((rom: { id: { romName: string } }) => {
-            romDropdownMenu.innerHTML += `
-            <li>
-                <a class="dropdown-item" id="dropdown-item-${rom.id.romName}" href="#">${rom.id.romName.replace(/\.ch8$/, "")}</a>
-            </li>`;
-        });        
-
-    } catch (error) {
-        console.error('Error fetching ROMs:', error);
-    }
-}
-
-async function saveRom(id: string, name: string, token: string) {
-    const userId = id;
-    const romName = name;
-
-    console.log(token);
-
-    const response = await fetch("http://localhost:8080/rom/save", {
-        method: "POST",
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: id, romName: name })
-    });
-
-    const message = await response.text();
-    showErrorModal("Save ROM", message);
-}
-
-
 
 async function main() {
     let emulator: Emulator | null = null;
@@ -194,49 +142,6 @@ async function main() {
 
         reader.readAsArrayBuffer(file);
     });
-}
-
-function showErrorModal(title: string, message: string) {
-    const modalTitle = document.getElementById("errorModalLabel");
-    const modalBody = document.getElementById("errorModalBody");
-    const modalElement = document.getElementById("errorModal");
-
-    if (modalTitle) modalTitle.textContent = title;
-    if (modalBody) modalBody.textContent = message;
-
-    if (modalElement) {
-        const errorModal = new bootstrap.Modal(modalElement);
-        errorModal.show();
-    }
-}
-
-function showEmulatorErrorModal(title: string, message: string) {
-    const modalTitle = document.getElementById("errorModalLabel");
-    const modalBody = document.getElementById("errorModalBody");
-    const modalElement = document.getElementById("errorModal");
-
-    if (modalTitle) modalTitle.textContent = title;
-    if (modalBody) modalBody.textContent = message;
-
-    if (modalElement) {
-        const errorModal = new bootstrap.Modal(modalElement);
-        errorModal.show();
-
-        // Reload the page when the modal is fully hidden
-        modalElement.addEventListener("hidden.bs.modal", () => {
-            location.reload();
-        }, { once: true }); // `once: true` ensures the event runs only once per modal display
-    }
-}
-
-function showLoading(text: string) {
-    loadingOverlay.style.display = "flex";
-    loadingText.innerText = text;
-}
-
-function hideLoading() {
-    loadingOverlay.style.display = "none";
-    loadingText.innerText = "";
 }
 
 main();
