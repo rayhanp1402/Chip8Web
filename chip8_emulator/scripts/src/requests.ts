@@ -57,7 +57,7 @@ export async function listPersonalRoms(userId: string, token: string) {
                     <td>${i}</td>
                     <td>${rom.id.romName}</td>
                     <td>
-                        <input type="checkbox" class="form-check-input" name="romSelect" value="1">
+                        <input type="checkbox" class="form-check-input" name="romSelect" value="${rom.id.romName}">
                     </td>
                 </tr>
             `;
@@ -122,6 +122,49 @@ export async function saveRom(id: string, name: string, token: string) {
             icon: "error",
             title: "Network Error",
             text: "Failed to save ROM.",
+            confirmButtonColor: "#d33",
+        });
+    }
+}
+
+export async function deleteRoms(roms: { userId: string; romName: string }[], token: string) {
+    try {
+        const response = await fetch("http://localhost:8080/rom/delete", {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(roms)
+        });
+
+        const message = await response.text();
+
+        if (!response.ok) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: message,
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: "success",
+            title: "Deleted",
+            text: message,
+            confirmButtonColor: "#3085d6",
+        }).then(() => {
+            window.location.reload();
+        });
+
+    } catch (error) {
+        console.error("Error deleting ROMs:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Network Error",
+            text: "Failed to delete ROMs.",
             confirmButtonColor: "#d33",
         });
     }

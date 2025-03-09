@@ -2,7 +2,7 @@ import { Emulator } from "./emulator";
 import { signInWithGoogle, signOut } from "./auth";
 import { SUPABASE } from "./auth";
 import { showErrorModal, showEmulatorErrorModal, showLoading, hideLoading } from "./ui_utils";
-import { listPublicRoms, listPersonalRoms, saveRom } from "./requests";
+import { listPublicRoms, listPersonalRoms, saveRom, deleteRoms } from "./requests";
 
 const uploadROMButton = document.getElementById("upload-rom-button") as HTMLButtonElement;
 const uploadROMInput = document.getElementById("upload-rom") as HTMLInputElement;
@@ -12,6 +12,8 @@ const logoutButton = document.getElementById("logout-button") as HTMLButtonEleme
 
 const saveROMButton = document.getElementById("save-rom-button") as HTMLButtonElement;
 const saveROMInput = document.getElementById("save-rom") as HTMLButtonElement;
+
+const confirmDeleteRomButton = document.getElementById("confirm-delete-rom-button") as HTMLButtonElement;
 
 async function main() {
     let emulator: Emulator | null = null;
@@ -84,6 +86,22 @@ async function main() {
 
         hideLoading();
     });    
+
+    confirmDeleteRomButton.addEventListener("click", (event: Event) => {
+        showLoading("Deleting ROM...");
+        const selectedRoms = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="romSelect"]:checked'))
+                                .map(input => input.value);
+
+        const selectedRomsWithUser: { userId: string; romName: string }[] = [];
+        selectedRoms.forEach(romName => {
+            selectedRomsWithUser.push({ userId: uuid as string, romName });
+        });
+
+        // console.log(selectedRomsWithUser);
+        deleteRoms(selectedRomsWithUser, token);
+
+        hideLoading();
+    });
  
     uploadROMButton.addEventListener("click", function() {
         uploadROMInput.value = ""; // Reset input to allow re-selecting the same file

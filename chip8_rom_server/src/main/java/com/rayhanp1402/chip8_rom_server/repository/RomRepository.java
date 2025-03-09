@@ -13,4 +13,6 @@ public interface RomRepository extends JpaRepository<Rom, RomId> {
     List<Rom> findByIdUserIdAndIsPublic(UUID userId, boolean isPublic);
 
     List<Rom> findByIsPublic(boolean isPublic);
+
+    void deleteById(RomId romId);
 }

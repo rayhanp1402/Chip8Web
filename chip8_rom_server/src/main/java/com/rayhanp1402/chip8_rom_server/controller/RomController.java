@@ -42,4 +42,18 @@ public class RomController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteRoms(@RequestBody List<RomRequest> romRequests) {
+        try {
+            for (RomRequest romRequest : romRequests) {
+                UUID userId = romRequest.getUserId();
+                String romName = romRequest.getRomName();
+                romService.deleteRom(userId, romName);
+            }
+            return ResponseEntity.ok("ROMs deleted successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

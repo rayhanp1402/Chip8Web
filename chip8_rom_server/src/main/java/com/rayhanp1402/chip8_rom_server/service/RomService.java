@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,5 +42,21 @@ public class RomService {
 
         Rom rom = new Rom(romId, isPublic);
         return romRepository.save(rom);
+    }
+
+    public void deleteRom(UUID userId, String romName) {
+        RomId romId = new RomId(userId, romName);
+        Optional<Rom> romOptional = romRepository.findById(romId);
+
+        if (romOptional.isEmpty()) {
+            throw new IllegalArgumentException("ROM not found.");
+        }
+
+        Rom rom = romOptional.get();
+        if (rom.isPublic()) {
+            throw new IllegalArgumentException("Cannot delete publicly available ROM.");
+        }
+
+        romRepository.deleteById(romId);
     }
 }
