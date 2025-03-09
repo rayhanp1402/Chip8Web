@@ -1,23 +1,27 @@
 package com.rayhanp1402.chip8_rom_server.service;
 
 import com.rayhanp1402.chip8_rom_server.model.Rom;
+import com.rayhanp1402.chip8_rom_server.repository.RomRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RomService {
-    private final List<Rom> roms = Arrays.asList(
-            new Rom("IBM Logo.ch8", "rayhanp1402"),
-            new Rom("Space Invaders.ch8", "rayhanp1402"),
-            new Rom("Tetris.ch8", "rayhanp1402")
-    );
+    private final RomRepository romRepository;
 
-    public List<String> listRoms() {
-        // This will only get the ROMs romName instead of with its uploader
-        return this.roms.stream()
-                .map(Rom::getRomName)
-                .toList();
-    };
+    @Autowired
+    public RomService(RomRepository romRepository) {
+        this.romRepository = romRepository;
+    }
+
+    public List<Rom> getRomsByUserId(UUID userId) {
+        return romRepository.findByIdUserId(userId);
+    }
+
+    public List<Rom> getPublicRoms(boolean isPublic) {
+        return romRepository.findByIsPublic(isPublic);
+    }
 }

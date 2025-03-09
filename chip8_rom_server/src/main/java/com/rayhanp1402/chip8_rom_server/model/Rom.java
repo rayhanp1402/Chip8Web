@@ -1,32 +1,39 @@
 package com.rayhanp1402.chip8_rom_server.model;
 
-import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
-@Component
-@NoArgsConstructor
+@Entity
+@Table(name = "roms")
 public class Rom {
-    private String romName;
-    private String uploader;
+    @EmbeddedId
+    private RomId id;
 
-    public Rom(String romName, String uploader) {
-        this.romName = romName;
-        this.uploader = uploader;
+    @Column(name = "is_public", nullable = false)
+    private boolean isPublic;
+
+    public Rom() {}
+
+    public Rom(RomId id, boolean isPublic) {
+        this.id = id;
+        this.isPublic = isPublic;
     }
 
-    public String getRomName() {
-        return romName;
+    public RomId getId() {
+        return id;
     }
 
-    public void setRomName(String romName) {
-        this.romName = romName;
+    public void setId(RomId id) {
+        this.id = id;
     }
 
-    public String getUploader() {
-        return uploader;
+    public boolean isPublic() {
+        return isPublic;
     }
 
-    public void setUploader(String uploader) {
-        this.uploader = uploader;
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 }

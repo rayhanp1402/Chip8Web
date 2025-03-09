@@ -1,5 +1,6 @@
 package com.rayhanp1402.chip8_rom_server.controller;
 
+import com.rayhanp1402.chip8_rom_server.model.Rom;
 import com.rayhanp1402.chip8_rom_server.service.RomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,11 +14,15 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/rom")
 public class RomController {
+    private final RomService romService;
+
     @Autowired
-    private RomService romService;
+    public RomController(RomService romService) {
+        this.romService = romService;
+    }
 
     @GetMapping("/public/list")
-    public List<String> list() {
-        return romService.listRoms();
+    public List<Rom> list() {
+        return romService.getPublicRoms(true);
     }
 }

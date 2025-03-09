@@ -18,24 +18,30 @@ const loginButton = document.getElementById("login-button") as HTMLButtonElement
 const logoutButton = document.getElementById("logout-button") as HTMLButtonElement;
 
 async function listRoms() {
-    // Get the uploaded ROMs list
     try {
         romDropdownMenu.innerHTML = ``;
+
+        // Fetch ROM list
         const response = await fetch('http://localhost:8080/rom/public/list');
+
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+
         const roms = await response.json();
-        for (let i = 0; i < roms.length; ++i) {
+
+        roms.forEach((rom: { id: { romName: string } }) => {
             romDropdownMenu.innerHTML += `
             <li>
-                <a class="dropdown-item" id="dropdown-item-${roms[i]}" href="#">${roms[i].replace(/\.ch8$/, "")}</a>
+                <a class="dropdown-item" id="dropdown-item-${rom.id.romName}" href="#">${rom.id.romName.replace(/\.ch8$/, "")}</a>
             </li>`;
-        }
+        });        
+
     } catch (error) {
         console.error('Error fetching ROMs:', error);
     }
 }
+
 
 async function main() {
     let emulator: Emulator | null = null;
