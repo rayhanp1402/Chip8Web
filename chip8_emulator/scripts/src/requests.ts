@@ -181,9 +181,42 @@ export async function deleteRoms(roms: { userId: string; romName: string }[], to
     }
 }
 
-export async function readPublicRom(id: string, name: string, token: string) {
+export async function readPublicRom(id: string, name: string) {
     try {
         const response = await fetch(`http://localhost:8080/rom/public/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
+            method: "GET"
+        });
+
+        if (!response.ok) {
+            const message = await response.text();
+            Swal.fire({
+                icon: "error",
+                title: "Error Reading ROM",
+                text: message,
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
+
+        const downloadUrl = await response.text();
+
+        // Open the file in a new tab
+        window.open(downloadUrl, "_blank");
+
+    } catch (error) {
+        console.error("Error reading ROM:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Network Error",
+            text: "Failed to fetch ROM.",
+            confirmButtonColor: "#d33",
+        });
+    }
+}
+
+export async function readPersonalRom(id: string, name: string, token: string) {
+    try {
+        const response = await fetch(`http://localhost:8080/rom/personal/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`

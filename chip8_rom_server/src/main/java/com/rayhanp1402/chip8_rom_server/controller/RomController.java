@@ -28,7 +28,7 @@ public class RomController {
     }
 
     @GetMapping("/public/get")
-    public ResponseEntity<?> getRomDownloadUrl(@RequestParam UUID userId, @RequestParam String romName) {
+    public ResponseEntity<?> getPublicRomDownloadUrl(@RequestParam UUID userId, @RequestParam String romName) {
         try {
             URL downloadUrl = romService.getPublicRomDownloadUrl(userId, romName);
             return ResponseEntity.ok(downloadUrl.toString());
@@ -40,6 +40,16 @@ public class RomController {
     @GetMapping("/personal/list")
     public List<Rom> personalList(@RequestParam UUID userId) {
         return romService.getRomsByUserIdAndIsPublic(userId, false);
+    }
+
+    @GetMapping("/personal/get")
+    public ResponseEntity<?> getPersonalRomDownloadUrl(@RequestParam UUID userId, @RequestParam String romName) {
+        try {
+            URL downloadUrl = romService.getPersonalRomDownloadUrl(userId, romName);
+            return ResponseEntity.ok(downloadUrl.toString());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/save")

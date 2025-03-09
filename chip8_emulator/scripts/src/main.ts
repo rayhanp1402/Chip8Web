@@ -2,7 +2,7 @@ import { Emulator } from "./emulator";
 import { signInWithGoogle, signOut } from "./auth";
 import { SUPABASE } from "./auth";
 import { showErrorModal, showEmulatorErrorModal, showLoading, hideLoading } from "./ui_utils";
-import { listPublicRoms, listPersonalRoms, saveRom, deleteRoms, readPublicRom } from "./requests";
+import { listPublicRoms, listPersonalRoms, saveRom, deleteRoms, readPublicRom, readPersonalRom } from "./requests";
 
 const uploadROMButton = document.getElementById("upload-rom-button") as HTMLButtonElement;
 const uploadROMInput = document.getElementById("upload-rom") as HTMLInputElement;
@@ -107,7 +107,9 @@ async function main() {
             const target = event.target as HTMLElement;
             const romData: { id: {userId: string, romName: string}, public: boolean} = JSON.parse(target.getAttribute("data-rom") as string);
             if (romData["public"]) {
-                readPublicRom(romData["id"]["userId"], romData["id"]["romName"], token);
+                readPublicRom(romData["id"]["userId"], romData["id"]["romName"]);
+            } else {
+                readPersonalRom(romData["id"]["userId"], romData["id"]["romName"], token);
             }
         });
     });

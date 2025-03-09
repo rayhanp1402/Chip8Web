@@ -153,4 +153,46 @@ public class RomService {
             throw new RuntimeException("Error generating download URL", e);
         }
     }
+
+    public URL getPersonalRomDownloadUrl(UUID userId, String romName) {
+        // Check in the database first
+        RomId romId = new RomId(userId, romName);
+        Optional<Rom> romOptional = romRepository.findById(romId);
+
+        if (romOptional.isEmpty()) {
+            throw new IllegalArgumentException("ROM not found.");
+        }
+
+        Rom rom = romOptional.get();
+
+        // Generate pre-signed URL
+        String objectKey = userId + "/" + romName;
+
+        AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(
+                Dotenv.load().get("AWS_ACCESS_KEY_ID"),
+                Dotenv.load().get("AWS_SECRET_ACCESS_KEY")
+        ));
+
+        try (S3Presigner presigner = S3Presigner.builder()
+                .credentialsProvider(credentialsProvider)
+                .region(Region.of(Dotenv.load().get("AWS_REGION")))
+                .build()) {
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .key(objectKey)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+
+            return presignedRequest.url();
+        } catch (S3Exception e) {
+            throw new RuntimeException("Error generating download URL", e);
+        }
+    }
 }
