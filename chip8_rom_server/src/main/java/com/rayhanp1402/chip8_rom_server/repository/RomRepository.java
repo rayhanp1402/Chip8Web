@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface RomRepository extends JpaRepository<Rom, RomId> {
-    List<Rom> findByIdUserId(UUID userId);
+    List<Rom> findByIdUserIdAndIsPublic(UUID userId, boolean isPublic);
 
     List<Rom> findByIsPublic(boolean isPublic);
 }

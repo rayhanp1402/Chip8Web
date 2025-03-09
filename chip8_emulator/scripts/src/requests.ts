@@ -1,12 +1,10 @@
-import { showErrorModal } from "./ui_utils";
 import Swal from "sweetalert2";
 
 const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
+romDropdownMenu.innerHTML = ``;
 
-export async function listRoms() {
+export async function listPublicRoms() {
     try {
-        romDropdownMenu.innerHTML = ``;
-
         // Fetch ROM list
         const response = await fetch('http://localhost:8080/rom/public/list');
 
@@ -27,6 +25,34 @@ export async function listRoms() {
         console.error('Error fetching ROMs:', error);
     }
 }
+
+export async function listPersonalRoms(userId: string, token: string) {
+    try {
+        const response = await fetch(`http://localhost:8080/rom/personal/list?userId=${userId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const roms = await response.json();
+        roms.forEach((rom: { id: { romName: string } }) => {
+            romDropdownMenu.innerHTML += `
+            <li>
+                <a class="dropdown-item" id="dropdown-item-${rom.id.romName}" href="#">${rom.id.romName.replace(/\.ch8$/, "")}</a>
+            </li>`;
+        });    
+    } catch (error) {
+        console.error("Error fetching personal ROMs:", error);
+        return [];
+    }
+}
+
 
 export async function saveRom(id: string, name: string, token: string) {
     try {

@@ -2,7 +2,7 @@ import { Emulator } from "./emulator";
 import { signInWithGoogle, signOut } from "./auth";
 import { SUPABASE } from "./auth";
 import { showErrorModal, showEmulatorErrorModal, showLoading, hideLoading } from "./ui_utils";
-import { listRoms, saveRom } from "./requests";
+import { listPublicRoms, listPersonalRoms, saveRom } from "./requests";
 
 const uploadROMButton = document.getElementById("upload-rom-button") as HTMLButtonElement;
 const uploadROMInput = document.getElementById("upload-rom") as HTMLInputElement;
@@ -20,8 +20,8 @@ async function main() {
     let uuid = "";
     let token = "";
     
-    // Fetches the uploaded ROMs
-    listRoms();
+    // Fetches the uploaded public ROMs
+    listPublicRoms();
 
     // Fetch user
     const { data: userData, error: userError } = await SUPABASE.auth.getUser();
@@ -50,6 +50,9 @@ async function main() {
     } else {
         token = sessionData.session?.access_token || "";
     }
+
+    // Fetches the uploaded private/personal ROMs
+    listPersonalRoms(uuid, token);
 
     // Handle login
     loginButton.addEventListener("click", async () => {

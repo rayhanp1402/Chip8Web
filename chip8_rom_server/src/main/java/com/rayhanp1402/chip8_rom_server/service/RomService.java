@@ -19,8 +19,8 @@ public class RomService {
         this.romRepository = romRepository;
     }
 
-    public List<Rom> getRomsByUserId(UUID userId) {
-        return romRepository.findByIdUserId(userId);
+    public List<Rom> getRomsByUserIdAndIsPublic(UUID userId, boolean isPublic) {
+        return romRepository.findByIdUserIdAndIsPublic(userId, isPublic);
     }
 
     public List<Rom> getPublicRoms(boolean isPublic) {

@@ -21,8 +21,13 @@ public class RomController {
     }
 
     @GetMapping("/public/list")
-    public List<Rom> list() {
+    public List<Rom> publicList() {
         return romService.getPublicRoms(true);
+    }
+
+    @GetMapping("/personal/list")
+    public List<Rom> personalList(@RequestParam UUID userId) {
+        return romService.getRomsByUserIdAndIsPublic(userId, false);
     }
 
     @PostMapping("/save")
