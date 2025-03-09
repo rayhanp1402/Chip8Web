@@ -1,7 +1,4 @@
-import { Disassembler } from "./disassembler";
 import { Emulator } from "./emulator";
-import { UtilityTerminal } from "./utility_terminal";
-import { CHIP8 } from "./chip8";
 import { signInWithGoogle, signOut } from "./auth";
 import { SUPABASE } from "./auth";
 
@@ -16,6 +13,11 @@ const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElem
 
 const loginButton = document.getElementById("login-button") as HTMLButtonElement;
 const logoutButton = document.getElementById("logout-button") as HTMLButtonElement;
+
+const saveROMButton = document.getElementById("save-rom-button") as HTMLButtonElement;
+const saveROMInput = document.getElementById("save-rom") as HTMLButtonElement;
+
+const loadingText = document.getElementById("loading-text") as HTMLElement;
 
 async function listRoms() {
     try {
@@ -42,30 +44,64 @@ async function listRoms() {
     }
 }
 
+async function saveRom(id: string, name: string, token: string) {
+    const userId = id;
+    const romName = name;
+
+    console.log(token);
+
+    const response = await fetch("http://localhost:8080/rom/save", {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: id, romName: name })
+    });
+
+    const message = await response.text();
+    showErrorModal("Save ROM", message);
+}
+
+
 
 async function main() {
     let emulator: Emulator | null = null;
     let username = "Guest";
     let email = "Guest";
+    let uuid = "";
+    let token = "";
     
     // Fetches the uploaded ROMs
     listRoms();
 
-    const { data, error } = await SUPABASE.auth.getUser();
+    // Fetch user
+    const { data: userData, error: userError } = await SUPABASE.auth.getUser();
 
-    if (error) {
-        console.error("Error fetching user:", error.message);
-    } else if (data?.user) {
-        const { email: userEmail, user_metadata } = data.user;
+    if (userError) {
+        console.error("Error fetching user:", userError.message);
+    } else if (userData?.user) {
+        const { id: userId, email: userEmail, user_metadata } = userData.user;
         username = user_metadata?.full_name || "User";
         email = userEmail ?? "User";
-        console.log("Logged in as:", username, email);
+        uuid = userId;
+        console.log("Logged in as:", username, email, uuid);
 
         loginButton.style.display = "none";
         logoutButton.style.display = "block";
     } else {
         loginButton.style.display = "block";
         logoutButton.style.display = "none";
+    }
+
+    // Fetch session token
+    const { data: sessionData, error: sessionError } = await SUPABASE.auth.getSession();
+
+    if (sessionError) {
+        console.error("Error fetching session:", sessionError.message);
+    } else {
+        token = sessionData.session?.access_token || "";
+        console.log("JWT Token:", token);
     }
 
     // Handle login
@@ -78,13 +114,34 @@ async function main() {
         await signOut();
     });
 
+    saveROMButton.addEventListener("click", function() {
+        saveROMInput.value = ""; // Reset input to allow re-selecting the same file
+        saveROMInput.click();
+    });
+
+    saveROMInput.addEventListener("change", async (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        if (!input.files || input.files.length === 0) return;
+    
+        showLoading("Saving ROM...");
+    
+        try {
+            const file = input.files[0];
+            await saveRom(uuid, file.name, token);
+        } catch (error) {
+            console.error("Error saving ROM:", error);
+        }
+
+        hideLoading();
+    });    
+ 
     uploadROMButton.addEventListener("click", function() {
         uploadROMInput.value = ""; // Reset input to allow re-selecting the same file
         uploadROMInput.click();
     });
 
     uploadROMInput.addEventListener("change", (event: Event) => {
-        showLoading();
+        showLoading("Loading ROM...");
 
         const target = event.target as HTMLInputElement | null;
 
@@ -172,12 +229,14 @@ function showEmulatorErrorModal(title: string, message: string) {
     }
 }
 
-function showLoading() {
+function showLoading(text: string) {
     loadingOverlay.style.display = "flex";
+    loadingText.innerText = text;
 }
 
 function hideLoading() {
     loadingOverlay.style.display = "none";
+    loadingText.innerText = "";
 }
 
 main();

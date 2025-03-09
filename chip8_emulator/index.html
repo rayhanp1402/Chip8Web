@@ -22,7 +22,7 @@
 <body>
     <div id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <p>Loading ROM...</p>
+        <p id="loading-text">Loading ROM...</p>
     </div>    
     
     <div class="root-container">
@@ -83,9 +83,8 @@
             </div>
 
             <div class="upload-container">
-                <button class="btn upload-rom-btn" id="save-rom-button">
-                    Save ROM
-                </button>
+                <input type="file" id="save-rom" class="upload-rom-input" accept=".ch8" hidden>
+                <button class="btn upload-rom-btn" id="save-rom-button">Save ROM</button>
             </div>
 
             <div class="upload-container">

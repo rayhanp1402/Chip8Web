@@ -1,7 +1,9 @@
 package com.rayhanp1402.chip8_rom_server.service;
 
 import com.rayhanp1402.chip8_rom_server.model.Rom;
+import com.rayhanp1402.chip8_rom_server.model.RomId;
 import com.rayhanp1402.chip8_rom_server.repository.RomRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +25,15 @@ public class RomService {
 
     public List<Rom> getPublicRoms(boolean isPublic) {
         return romRepository.findByIsPublic(isPublic);
+    }
+
+    @Transactional
+    public Rom saveRom(UUID userId, String romName, boolean isPublic) {
+        if (!romName.toLowerCase().endsWith(".ch8")) {
+            throw new IllegalArgumentException("Only .ch8 files are allowed");
+        }
+        RomId romId = new RomId(userId, romName);
+        Rom rom = new Rom(romId, isPublic);
+        return romRepository.save(rom);
     }
 }
