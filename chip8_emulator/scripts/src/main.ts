@@ -74,12 +74,12 @@ async function main() {
     saveROMInput.addEventListener("change", async (event: Event) => {
         const input = event.target as HTMLInputElement;
         if (!input.files || input.files.length === 0) return;
-    
+
         showLoading("Saving ROM...");
-    
+
         try {
             const file = input.files[0];
-            await saveRom(uuid, file.name, token);
+            await saveRom(uuid, file, token);
         } catch (error) {
             console.error("Error saving ROM:", error);
         }

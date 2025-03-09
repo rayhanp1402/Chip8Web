@@ -6,6 +6,7 @@ import com.rayhanp1402.chip8_rom_server.service.RomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,12 +32,11 @@ public class RomController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveRom(@RequestBody RomRequest romRequest) {
-        UUID userId = romRequest.getUserId();
-        String romName = romRequest.getRomName();
-
+    public ResponseEntity<?> saveRom(@RequestParam("userId") UUID userId,
+                                     @RequestParam("romName") String romName,
+                                     @RequestParam("file") MultipartFile file) {
         try {
-            romService.saveRom(userId, romName, false);
+            romService.saveRom(userId, romName, false, file);
             return ResponseEntity.ok("ROM saved successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -76,15 +76,19 @@ export async function listPersonalRoms(userId: string, token: string) {
 }
 
 
-export async function saveRom(id: string, name: string, token: string) {
+export async function saveRom(id: string, file: File, token: string) {
     try {
+        const formData = new FormData();
+        formData.append("userId", id);
+        formData.append("romName", file.name);
+        formData.append("file", file); // Attach file
+
         const response = await fetch("http://localhost:8080/rom/save", {
             method: "POST",
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ userId: id, romName: name })
+            body: formData,
         });
 
         const message = await response.text();
