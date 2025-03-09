@@ -15,8 +15,61 @@ const saveROMInput = document.getElementById("save-rom") as HTMLButtonElement;
 
 const confirmDeleteRomButton = document.getElementById("confirm-delete-rom-button") as HTMLButtonElement;
 
+function readRomIntoEmulator(event: Event, emulatorRef: { current: Emulator | null }, username: string, email: string) {
+    const target = event.target as HTMLInputElement | null;
+
+    if (!target || !target.files || target.files.length === 0) {
+        hideLoading();
+        showErrorModal("No file selected", "Please select a valid CHIP-8 ROM file.");
+        return;
+    }
+
+    const file = target.files[0];
+    const fileName = file.name.toLowerCase();
+
+    if (!fileName.endsWith(".ch8")) {
+        hideLoading();
+        showErrorModal("Invalid File Type", "Please upload a valid CHIP-8 ROM (.ch8).");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onerror = () => {
+        hideLoading();
+        showErrorModal("File Read Error", "Failed to read the file. Please try again.");
+    };
+
+    reader.onload = (e) => {
+        if (!e.target || !e.target.result) {
+            hideLoading();
+            showErrorModal("File Read Error", "Error: File could not be read.");
+            return;
+        }
+
+        const arrayBuffer = e.target.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        try {
+            if (emulatorRef.current === null) {
+                emulatorRef.current = new Emulator(uint8Array, fileName, username, email);
+            } else {
+                emulatorRef.current.reset(uint8Array, fileName);
+            }
+        } catch (error) {
+            hideLoading();
+            showEmulatorErrorModal("Emulator Error", "Failed to initialize/reset emulator.");
+            console.error(error);
+        }
+
+        hideLoading();
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
 async function main() {
-    let emulator: Emulator | null = null;
+    let emulatorRef = { current: null as Emulator | null };
     let username = "Guest";
     let email = "Guest";
     let uuid = "";
@@ -104,12 +157,13 @@ async function main() {
 
     document.querySelectorAll(".dropdown-item").forEach((item) => {
         item.addEventListener("click", (event) => {
+            showLoading("Loading ROM...");
             const target = event.target as HTMLElement;
             const romData: { id: {userId: string, romName: string}, public: boolean} = JSON.parse(target.getAttribute("data-rom") as string);
             if (romData["public"]) {
-                readPublicRom(romData["id"]["userId"], romData["id"]["romName"]);
+                readPublicRom(romData["id"]["userId"], romData["id"]["romName"], emulatorRef, username, email);
             } else {
-                readPersonalRom(romData["id"]["userId"], romData["id"]["romName"], token);
+                readPersonalRom(romData["id"]["userId"], romData["id"]["romName"], token, emulatorRef, username, email);
             }
         });
     });
@@ -121,57 +175,7 @@ async function main() {
 
     uploadROMInput.addEventListener("change", (event: Event) => {
         showLoading("Loading ROM...");
-
-        const target = event.target as HTMLInputElement | null;
-
-        if (!target || !target.files || target.files.length === 0) {
-            hideLoading();
-            showErrorModal("No file selected", "Please select a valid CHIP-8 ROM file.");
-            return;
-        }
-
-        const file = target.files[0];
-        const fileName = file.name.toLowerCase();
-
-        if (!fileName.endsWith(".ch8")) {
-            hideLoading();
-            showErrorModal("Invalid File Type", "Please upload a valid CHIP-8 ROM (.ch8).");
-            return;
-        }
-
-        const reader = new FileReader();
-
-        reader.onerror = () => {
-            hideLoading();
-            showErrorModal("File Read Error", "Failed to read the file. Please try again.");
-        };
-
-        reader.onload = (e) => {
-            if (!e.target || !e.target.result) {
-                hideLoading();
-                showErrorModal("File Read Error", "Error: File could not be read.");
-                return;
-            }
-
-            const arrayBuffer = e.target.result as ArrayBuffer;
-            const uint8Array = new Uint8Array(arrayBuffer);
-
-            try {
-                if (emulator === null) {
-                    emulator = new Emulator(uint8Array, fileName, username, email);
-                } else {
-                    emulator.reset(uint8Array, fileName);
-                }
-            } catch (error) {
-                hideLoading();
-                showEmulatorErrorModal("Emulator Error", "Failed to initialize/reset emulator.");
-                console.error(error);
-            }
-
-            hideLoading();
-        };
-
-        reader.readAsArrayBuffer(file);
+        readRomIntoEmulator(event, emulatorRef, username, email);
     });
 }
 

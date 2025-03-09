@@ -1,3 +1,5 @@
+import { Emulator } from "./emulator";
+import { showEmulatorErrorModal, hideLoading } from "./ui_utils";
 import Swal from "sweetalert2";
 
 const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
@@ -181,7 +183,13 @@ export async function deleteRoms(roms: { userId: string; romName: string }[], to
     }
 }
 
-export async function readPublicRom(id: string, name: string) {
+export async function readPublicRom(
+    id: string, 
+    name: string, 
+    emulatorRef: { current: Emulator | null }, 
+    username: string, 
+    email: string
+) {
     try {
         const response = await fetch(`http://localhost:8080/rom/public/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
             method: "GET"
@@ -191,17 +199,48 @@ export async function readPublicRom(id: string, name: string) {
             const message = await response.text();
             Swal.fire({
                 icon: "error",
-                title: "Error Reading ROM",
+                title: "Error Fetching ROM",
                 text: message,
                 confirmButtonColor: "#d33",
             });
             return;
         }
 
-        const downloadUrl = await response.text();
+        const presignedUrl = await response.text();
 
-        // Open the file in a new tab
-        window.open(downloadUrl, "_blank");
+        const romResponse = await fetch(presignedUrl);
+        if (!romResponse.ok) {
+            throw new Error("Failed to download ROM from S3.");
+        }
+
+        const arrayBuffer = await romResponse.arrayBuffer();
+
+        if (arrayBuffer.byteLength === 0) {
+            Swal.fire({
+                icon: "error",
+                title: "Empty ROM File",
+                text: "The downloaded ROM file is empty. Please check the backend or S3 storage.",
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
+
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        // Load ROM into Emulator
+        try {
+            if (emulatorRef.current === null) {
+                emulatorRef.current = new Emulator(uint8Array, name, username, email);
+            } else {
+                emulatorRef.current.reset(uint8Array, name);
+            }
+        } catch (error) {
+            hideLoading();
+            showEmulatorErrorModal("Emulator Error", "Failed to initialize/reset emulator.");
+            console.error(error);
+        }
+
+        hideLoading();
 
     } catch (error) {
         console.error("Error reading ROM:", error);
@@ -214,7 +253,14 @@ export async function readPublicRom(id: string, name: string) {
     }
 }
 
-export async function readPersonalRom(id: string, name: string, token: string) {
+export async function readPersonalRom(
+    id: string, 
+    name: string, 
+    token: string, 
+    emulatorRef: { current: Emulator | null }, 
+    username: string, 
+    email: string
+) {
     try {
         const response = await fetch(`http://localhost:8080/rom/personal/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
             method: "GET",
@@ -227,17 +273,48 @@ export async function readPersonalRom(id: string, name: string, token: string) {
             const message = await response.text();
             Swal.fire({
                 icon: "error",
-                title: "Error Reading ROM",
+                title: "Error Fetching ROM",
                 text: message,
                 confirmButtonColor: "#d33",
             });
             return;
         }
 
-        const downloadUrl = await response.text();
+        const presignedUrl = await response.text();
 
-        // Open the file in a new tab
-        window.open(downloadUrl, "_blank");
+        const romResponse = await fetch(presignedUrl);
+        if (!romResponse.ok) {
+            throw new Error("Failed to download ROM from S3.");
+        }
+
+        const arrayBuffer = await romResponse.arrayBuffer();
+
+        if (arrayBuffer.byteLength === 0) {
+            Swal.fire({
+                icon: "error",
+                title: "Empty ROM File",
+                text: "The downloaded ROM file is empty. Please check the backend or S3 storage.",
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
+
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        // Load ROM into Emulator
+        try {
+            if (emulatorRef.current === null) {
+                emulatorRef.current = new Emulator(uint8Array, name, username, email);
+            } else {
+                emulatorRef.current.reset(uint8Array, name);
+            }
+        } catch (error) {
+            hideLoading();
+            showEmulatorErrorModal("Emulator Error", "Failed to initialize/reset emulator.");
+            console.error(error);
+        }
+
+        hideLoading();
 
     } catch (error) {
         console.error("Error reading ROM:", error);
