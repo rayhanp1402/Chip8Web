@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.*;
@@ -81,7 +83,19 @@ public class RomService {
         if (rom.isPublic()) {
             throw new IllegalArgumentException("Cannot delete publicly available ROM.");
         }
+        String objectKey = userId + "/" + romName;
 
+        // Delete from S3
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .key(objectKey)
+                    .build());
+        } catch (S3Exception e) {
+            throw new RuntimeException("Error deleting file from S3", e);
+        }
+
+        // Delete from database
         romRepository.deleteById(romId);
     }
 }

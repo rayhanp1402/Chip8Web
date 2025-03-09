@@ -97,7 +97,6 @@ async function main() {
             selectedRomsWithUser.push({ userId: uuid as string, romName });
         });
 
-        // console.log(selectedRomsWithUser);
         deleteRoms(selectedRomsWithUser, token);
 
         hideLoading();
