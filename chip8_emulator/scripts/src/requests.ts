@@ -22,7 +22,7 @@ export async function listPublicRoms() {
         roms.forEach((rom: { id: { romName: string } }) => {
             romDropdownMenu.innerHTML += `
             <li>
-                <a class="dropdown-item" id="dropdown-item-${rom.id.romName}" href="#">${rom.id.romName.replace(/\.ch8$/, "")}</a>
+                <a class="dropdown-item" href="#" data-rom='${JSON.stringify(rom)}'>${rom.id.romName.replace(/\.ch8$/, "")}</a>
             </li>`;
         });        
 
@@ -55,7 +55,7 @@ export async function listPersonalRoms(userId: string, token: string) {
         roms.forEach((rom: { id: { romName: string } }) => {
             romDropdownMenu.innerHTML += `
             <li>
-                <a class="dropdown-item" id="dropdown-item-${rom.id.romName}" href="#">${rom.id.romName.replace(/\.ch8$/, "")}</a>
+                <a class="dropdown-item" href="#" data-rom='${JSON.stringify(rom)}'>${rom.id.romName.replace(/\.ch8$/, "")}</a>
             </li>`;
 
             ++i;
@@ -176,6 +176,42 @@ export async function deleteRoms(roms: { userId: string; romName: string }[], to
             icon: "error",
             title: "Network Error",
             text: "Failed to delete ROMs.",
+            confirmButtonColor: "#d33",
+        });
+    }
+}
+
+export async function readPublicRom(id: string, name: string, token: string) {
+    try {
+        const response = await fetch(`http://localhost:8080/rom/public/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const message = await response.text();
+            Swal.fire({
+                icon: "error",
+                title: "Error Reading ROM",
+                text: message,
+                confirmButtonColor: "#d33",
+            });
+            return;
+        }
+
+        const downloadUrl = await response.text();
+
+        // Open the file in a new tab
+        window.open(downloadUrl, "_blank");
+
+    } catch (error) {
+        console.error("Error reading ROM:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Network Error",
+            text: "Failed to fetch ROM.",
             confirmButtonColor: "#d33",
         });
     }

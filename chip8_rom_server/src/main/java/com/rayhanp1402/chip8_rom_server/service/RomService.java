@@ -8,13 +8,21 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
+import java.net.URL;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -97,5 +105,52 @@ public class RomService {
 
         // Delete from database
         romRepository.deleteById(romId);
+    }
+
+    public URL getPublicRomDownloadUrl(UUID userId, String romName) {
+        // Check in the database first
+        RomId romId = new RomId(userId, romName);
+        Optional<Rom> romOptional = romRepository.findById(romId);
+
+        if (romOptional.isEmpty()) {
+            throw new IllegalArgumentException("ROM not found.");
+        }
+
+        Rom rom = romOptional.get();
+
+        // Check if the ROM is public
+        if (!rom.isPublic()) {
+            throw new IllegalArgumentException("Access denied. This ROM is private.");
+        }
+
+        // Generate pre-signed URL
+        String objectKey = userId + "/" + romName;
+
+        AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(
+                Dotenv.load().get("AWS_ACCESS_KEY_ID"),
+                Dotenv.load().get("AWS_SECRET_ACCESS_KEY")
+        ));
+
+        try (S3Presigner presigner = S3Presigner.builder()
+                .credentialsProvider(credentialsProvider)
+                .region(Region.of(Dotenv.load().get("AWS_REGION")))
+                .build()) {
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .key(objectKey)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+
+            return presignedRequest.url();
+        } catch (S3Exception e) {
+            throw new RuntimeException("Error generating download URL", e);
+        }
     }
 }

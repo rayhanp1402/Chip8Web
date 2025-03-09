@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,16 @@ public class RomController {
     @GetMapping("/public/list")
     public List<Rom> publicList() {
         return romService.getPublicRoms(true);
+    }
+
+    @GetMapping("/public/get")
+    public ResponseEntity<?> getRomDownloadUrl(@RequestParam UUID userId, @RequestParam String romName) {
+        try {
+            URL downloadUrl = romService.getPublicRomDownloadUrl(userId, romName);
+            return ResponseEntity.ok(downloadUrl.toString());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/personal/list")

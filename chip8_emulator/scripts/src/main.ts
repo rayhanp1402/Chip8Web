@@ -2,7 +2,7 @@ import { Emulator } from "./emulator";
 import { signInWithGoogle, signOut } from "./auth";
 import { SUPABASE } from "./auth";
 import { showErrorModal, showEmulatorErrorModal, showLoading, hideLoading } from "./ui_utils";
-import { listPublicRoms, listPersonalRoms, saveRom, deleteRoms } from "./requests";
+import { listPublicRoms, listPersonalRoms, saveRom, deleteRoms, readPublicRom } from "./requests";
 
 const uploadROMButton = document.getElementById("upload-rom-button") as HTMLButtonElement;
 const uploadROMInput = document.getElementById("upload-rom") as HTMLInputElement;
@@ -23,7 +23,7 @@ async function main() {
     let token = "";
     
     // Fetches the uploaded public ROMs
-    listPublicRoms();
+    await listPublicRoms();
 
     // Fetch user
     const { data: userData, error: userError } = await SUPABASE.auth.getUser();
@@ -54,7 +54,7 @@ async function main() {
     }
 
     // Fetches the uploaded private/personal ROMs
-    listPersonalRoms(uuid, token);
+    await listPersonalRoms(uuid, token);
 
     // Handle login
     loginButton.addEventListener("click", async () => {
@@ -100,6 +100,16 @@ async function main() {
         deleteRoms(selectedRomsWithUser, token);
 
         hideLoading();
+    });
+
+    document.querySelectorAll(".dropdown-item").forEach((item) => {
+        item.addEventListener("click", (event) => {
+            const target = event.target as HTMLElement;
+            const romData: { id: {userId: string, romName: string}, public: boolean} = JSON.parse(target.getAttribute("data-rom") as string);
+            if (romData["public"]) {
+                readPublicRom(romData["id"]["userId"], romData["id"]["romName"], token);
+            }
+        });
     });
  
     uploadROMButton.addEventListener("click", function() {
