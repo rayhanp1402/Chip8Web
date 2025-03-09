@@ -3,6 +3,9 @@ import Swal from "sweetalert2";
 const romDropdownMenu = document.getElementById("rom-dropdown-menu") as HTMLElement;
 romDropdownMenu.innerHTML = ``;
 
+const deleteRomList = document.getElementById("delete-rom-list") as HTMLElement;
+deleteRomList.innerHTML = ``;
+
 export async function listPublicRoms() {
     try {
         // Fetch ROM list
@@ -41,11 +44,23 @@ export async function listPersonalRoms(userId: string, token: string) {
         }
 
         const roms = await response.json();
+        let i = 0;
         roms.forEach((rom: { id: { romName: string } }) => {
             romDropdownMenu.innerHTML += `
             <li>
                 <a class="dropdown-item" id="dropdown-item-${rom.id.romName}" href="#">${rom.id.romName.replace(/\.ch8$/, "")}</a>
             </li>`;
+
+            ++i;
+            deleteRomList.innerHTML += `
+                <tr>
+                    <td>${i}</td>
+                    <td>${rom.id.romName}</td>
+                    <td>
+                        <input type="checkbox" class="form-check-input" name="romSelect" value="1">
+                    </td>
+                </tr>
+            `;
         });    
     } catch (error) {
         console.error("Error fetching personal ROMs:", error);
@@ -75,7 +90,7 @@ export async function saveRom(id: string, name: string, token: string) {
                 confirmButtonColor: "#3085d6",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.reload;
+                    window.location.reload();
                 }
             });
             return;
@@ -96,8 +111,11 @@ export async function saveRom(id: string, name: string, token: string) {
             title: "Success",
             text: message,
             confirmButtonColor: "#3085d6",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.reload();
+            }
         });
-
     } catch (error) {
         console.error(error);
         Swal.fire({

@@ -32,7 +32,13 @@ public class RomService {
         if (!romName.toLowerCase().endsWith(".ch8")) {
             throw new IllegalArgumentException("Only .ch8 files are allowed");
         }
+
         RomId romId = new RomId(userId, romName);
+
+        if (romRepository.existsById(romId)) {
+            throw new IllegalArgumentException("A ROM with this name already exists.");
+        }
+
         Rom rom = new Rom(romId, isPublic);
         return romRepository.save(rom);
     }
