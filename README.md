@@ -116,6 +116,10 @@ You can view the emulator's properties (such as the Registers and Memory) in rea
 ### 7. Terminal
 Once a ROM is loaded, you can use the terminal to fiddle with the disassembler (breakpoints and step) 
 or configure the cycle speed. You can type help to view the commands.
+### 8. Keypad
+You can test your keyboard to keypad mapping by pressing any keys on your keyboard. If one of the keypad
+"glows" when you press a key on your keyboard, then it is the mapped key. For example, the "R" in my keyboard
+corresponds to the "D" in the keypad (QWERTY-based). You can click on the keypads as well if you prefer.
 
 
 
