@@ -10,10 +10,12 @@ deleteRomList.innerHTML = ``;
 
 const confirmDeleteRomButton = document.getElementById("confirm-delete-rom-button") as HTMLButtonElement;
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export async function listPublicRoms() {
     try {
         // Fetch ROM list
-        const response = await fetch('http://localhost:8080/rom/public/list');
+        const response = await fetch(`${API_BASE_URL}/rom/public/list`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -35,7 +37,7 @@ export async function listPublicRoms() {
 
 export async function listPersonalRoms(userId: string, token: string) {
     try {
-        const response = await fetch(`http://localhost:8080/rom/personal/list?userId=${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/rom/personal/list?userId=${userId}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -85,7 +87,7 @@ export async function saveRom(id: string, file: File, token: string) {
         formData.append("romName", file.name);
         formData.append("file", file); // Attach file
 
-        const response = await fetch("http://localhost:8080/rom/save", {
+        const response = await fetch(`${API_BASE_URL}/rom/save`, {
             method: "POST",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -142,7 +144,7 @@ export async function saveRom(id: string, file: File, token: string) {
 
 export async function deleteRoms(roms: { userId: string; romName: string }[], token: string) {
     try {
-        const response = await fetch("http://localhost:8080/rom/delete", {
+        const response = await fetch(`${API_BASE_URL}/rom/delete`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -191,7 +193,7 @@ export async function readPublicRom(
     email: string
 ) {
     try {
-        const response = await fetch(`http://localhost:8080/rom/public/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
+        const response = await fetch(`${API_BASE_URL}/rom/public/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
             method: "GET"
         });
 
@@ -262,7 +264,7 @@ export async function readPersonalRom(
     email: string
 ) {
     try {
-        const response = await fetch(`http://localhost:8080/rom/personal/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
+        const response = await fetch(`${API_BASE_URL}/rom/personal/get?userId=${id}&romName=${encodeURIComponent(name)}`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`
