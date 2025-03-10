@@ -698,3 +698,26 @@ pre.memory-address {
     text-decoration: underline;
     color: #FFD700;
 }
+
+.title-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.chip8-title {
+    font-family: 'Press Start 2P', sans-serif;
+    font-size: 48px;
+    color: #00FF33;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 4px;
+    text-shadow: 
+        3px 3px 0px #000,  
+        -3px -3px 0px #00CC29,  
+        0px 0px 10px rgba(0, 255, 51, 0.8),  
+        0px 0px 20px rgba(0, 255, 51, 0.5); 
+    margin-bottom: 40px;
+    padding: 10px;
+    display: inline-block;
+}
