@@ -1,6 +1,5 @@
 package com.rayhanp1402.chip8_rom_server;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +48,7 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtDecoder customJwtDecoder() {
-        String secret = Dotenv.load().get("SUPABASE_JWT_SECRET");
+        String secret = System.getenv("SUPABASE_JWT_SECRET");
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
         return NimbusJwtDecoder.withSecretKey(key).build();

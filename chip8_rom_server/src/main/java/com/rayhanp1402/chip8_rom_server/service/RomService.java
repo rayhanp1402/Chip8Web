@@ -3,7 +3,6 @@ package com.rayhanp1402.chip8_rom_server.service;
 import com.rayhanp1402.chip8_rom_server.model.Rom;
 import com.rayhanp1402.chip8_rom_server.model.RomId;
 import com.rayhanp1402.chip8_rom_server.repository.RomRepository;
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,7 +63,7 @@ public class RomService {
             metadata.put("Content-Length", String.valueOf(file.getSize()));
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .bucket(System.getenv("AWS_BUCKET_NAME"))
                     .key(objectKey)
                     .metadata(metadata)
                     .build();
@@ -96,7 +95,7 @@ public class RomService {
         // Delete from S3
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder()
-                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .bucket(System.getenv("AWS_BUCKET_NAME"))
                     .key(objectKey)
                     .build());
         } catch (S3Exception e) {
@@ -127,17 +126,17 @@ public class RomService {
         String objectKey = userId + "/" + romName;
 
         AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(
-                Dotenv.load().get("AWS_ACCESS_KEY_ID"),
-                Dotenv.load().get("AWS_SECRET_ACCESS_KEY")
+                System.getenv("AWS_ACCESS_KEY_ID"),
+                System.getenv("AWS_SECRET_ACCESS_KEY")
         ));
 
         try (S3Presigner presigner = S3Presigner.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(Region.of(Dotenv.load().get("AWS_REGION")))
+                .region(Region.of(System.getenv("AWS_REGION")))
                 .build()) {
 
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .bucket(System.getenv("AWS_BUCKET_NAME"))
                     .key(objectKey)
                     .build();
 
@@ -169,17 +168,17 @@ public class RomService {
         String objectKey = userId + "/" + romName;
 
         AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(
-                Dotenv.load().get("AWS_ACCESS_KEY_ID"),
-                Dotenv.load().get("AWS_SECRET_ACCESS_KEY")
+                System.getenv("AWS_ACCESS_KEY_ID"),
+                System.getenv("AWS_SECRET_ACCESS_KEY")
         ));
 
         try (S3Presigner presigner = S3Presigner.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(Region.of(Dotenv.load().get("AWS_REGION")))
+                .region(Region.of(System.getenv("AWS_REGION")))
                 .build()) {
 
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(Dotenv.load().get("AWS_BUCKET_NAME"))
+                    .bucket(System.getenv("AWS_BUCKET_NAME"))
                     .key(objectKey)
                     .build();
 
