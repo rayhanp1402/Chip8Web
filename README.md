@@ -89,8 +89,27 @@ These are the technologies that made this possible
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+### 1. Loading ROM
+You can load the ROM via the Upload ROM button or Select ROM. Select ROM takes the saved ROMs from the cloud. Once a ROM is
+loaded, you can click the Play button to start the emulation or Stop button to stop it.
+### 2. Login with Google
+This will enable Save ROM feature and Delete ROM feature. Will change the terminal's username as well.
+### 3. Save and Delete ROM
+You can save your ROMs to cloud, which can be used later. You can also delete the saved ROM. Don't worry, your saved
+ROMs are private and cannot be read or downloaded by other users.
+### 4. Select ROM
+As stated above, used to load saved ROMs from the cloud into the emulator. There will be some ROMs which you haven't
+saved yourself, or in other words, that are not your ROMs. Those are publicly available ROMs which is uploaded by the
+developer/admin (myself).
+### 5. Change Cycle Speed
+Cycle speed can be configured to determine how fast in which the emulator executes the instructions.
+### 6. Disassembler
+You can view the emulator's properties (such as the Registers and Memory) in real time as the emulator is executing.
+### 7. Terminal
+Once a ROM is loaded, you can use the terminal to fiddle with the disassembler (breakpoints and step) 
+or configure the cycle speed. You can type help to view the commands.
 
-Key features will be listed here
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
