@@ -140,7 +140,7 @@ async function main() {
         hideLoading();
     });    
 
-    confirmDeleteRomButton.addEventListener("click", (event: Event) => {
+    confirmDeleteRomButton.addEventListener("click", async (event: Event) => {
         showLoading("Deleting ROM...");
         const selectedRoms = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="romSelect"]:checked'))
                                 .map(input => input.value);
@@ -150,7 +150,7 @@ async function main() {
             selectedRomsWithUser.push({ userId: uuid as string, romName });
         });
 
-        deleteRoms(selectedRomsWithUser, token);
+        await deleteRoms(selectedRomsWithUser, token);
 
         hideLoading();
     });
