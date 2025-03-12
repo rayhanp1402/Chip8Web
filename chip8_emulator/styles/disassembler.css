@@ -1,0 +1,201 @@
+/* Disassembler Accordion Styling */
+.accordion-item {
+    background: #000000;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    overflow: visible;
+}
+
+.accordion-button {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: none;
+    text-transform: uppercase;
+}
+
+.accordion-button:focus,
+.accordion-button:not(.collapsed) {
+    background: #00FF33;
+    color: #000000;
+    box-shadow: 0 0 10px rgba(0, 255, 51, 0.8);
+}
+
+.accordion-collapse {
+    background: #000000;
+}
+
+/* Disassembler Output */
+.current-instruction-output {
+    background: #111;
+    color: #00FF33;
+    font-family: 'Silkscreen', monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    max-height: 300px; /* Prevents overflow */
+    overflow-y: auto;
+    width: 230px;
+}
+
+.instruction-output {
+    display: grid;
+    color: white;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    gap: 10px;
+    text-align: left;
+    font-family: monospace;
+    width: 240px;
+}
+
+/* Ensuring preformatted text doesn't overflow */
+pre.disassembler-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+pre.memory-address {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+    color: #bbbbbb;
+}
+
+.disassembler-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 1000px;
+}
+
+.disassembler-container > * {
+    flex: 1 1 auto; /* Allow flexible sizing */
+    min-width: 120px; /* Ensure items don't get too small */
+}
+
+.special-registers-and-timers-output {
+    display: grid;
+    color: white;
+    gap: 20px;
+    text-align: left;
+    font-family: monospace;
+}
+
+.registers-and-stack-output {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    color: white;
+    gap: 20px;
+    text-align: left;
+    font-family: monospace;
+}
+
+.memory-output {
+    display: grid;
+    grid-template-columns: repeat(17, 1fr); /* 17 columns */
+    color: white;
+    gap: 20px;
+    text-align: left;
+    font-family: monospace;
+}
+
+.memory-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.memory-btn:hover {
+    background: #00FF33;
+    color: #000000;
+    box-shadow: 0px 0px 10px rgba(0, 255, 51, 0.8);
+}
+
+.memory-btn:active {
+    transform: scale(0.9);
+    background: #00CC29;
+    box-shadow: 0px 0px 5px rgba(0, 255, 51, 0.5);
+}
+
+.terminal-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+.terminal-output {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    background-color: black;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: monospace;
+}
+
+.instruction-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.instruction-btn:hover {
+    background: #00FF33;
+    color: #000000;
+    box-shadow: 0px 0px 10px rgba(0, 255, 51, 0.8);
+}
+
+.instruction-btn:active {
+    transform: scale(0.9);
+    background: #00CC29;
+    box-shadow: 0px 0px 5px rgba(0, 255, 51, 0.5);
+}
+
+.instruction-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Terminal scrollbar styling */
+.xterm-viewport {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #555 #222; /* Dark thumb, darker track */
+}
+
+/* Chrome, Edge, and Safari */
+.xterm-viewport::-webkit-scrollbar {
+    width: 8px;
+}
+
+.xterm-viewport::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 4px;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}

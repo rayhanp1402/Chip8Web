@@ -1,0 +1,174 @@
+.dropdown-container {
+    margin-top: 10px;
+}
+
+.dropdown-toggle {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    padding: 8px 12px;
+    text-transform: uppercase;
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle:focus,
+.dropdown-toggle.show {
+    background: #00FF33;
+    color: #000000;
+    border-color: #00FF33;
+}
+
+.dropdown-menu {
+    background: #000000;
+    border: 2px solid #00FF33;
+}
+
+.dropdown-item {
+    font-family: 'Silkscreen', sans-serif;
+    color: #00FF33;
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    background: #00FF33;
+    color: #000000;
+}
+
+.feature-buttons-container {
+    display: flex;
+    gap: 10px;
+}
+
+.cycle-setter-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 13px;
+    color: #00FF33;
+    background: #000;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    padding: 0cm 8px;
+    margin-top: 10px;
+}
+
+.cycle-label {
+    margin-right: 4px;
+}
+
+.cycle-value-container {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+#cycle-value-text {
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.cycle-unit {
+    font-size: 13px;
+    color: #00FF33;
+    margin-left: 3px;
+}
+
+.cycle-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.cycle-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 7px;
+    background: none;
+    color: #00FF33;
+    border: none;
+    cursor: pointer;
+    padding: 0px;
+    width: 14px;
+    text-align: center;
+}
+
+.cycle-btn:hover {
+    color: #ffffff;
+}
+
+.upload-container {
+    margin-top: 10px;
+}
+
+.upload-rom-btn {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 14px;
+    background: #000000;
+    color: #00FF33;
+    border: 2px solid #00FF33;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.upload-rom-btn:hover {
+    background: #00FF33;
+    color: #000000;
+}
+
+.volume-setter-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 13px;
+    color: #00FF33;
+    background: #000;
+    border: 2px solid #00FF33;
+    border-radius: 5px;
+    padding: 6px 8px;
+    margin-top: 10px;
+    width: 190px;
+    justify-content: space-between;
+}
+
+.volume-label {
+    font-weight: bold;
+    white-space: nowrap; /* Prevents wrapping */
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100px;
+    height: 6px;
+    --pc: 30%;
+    background: linear-gradient(to right, #00FF33 var(--pc), #000 var(--pc));
+    border-radius: 3px;
+    cursor: pointer;
+    outline: none;
+    border: 1px solid #00FF33;
+}
+
+/* Thumb styling for Chrome, Safari, Edge */
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #00FF33;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Thumb styling for Firefox */
+#volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #00FF33;
+    border-radius: 50%;
+    cursor: pointer;
+}
