@@ -51,6 +51,18 @@
     width: 240px;
 }
 
+@media (max-width: 520px) {
+    .current-instruction-output {
+        font-size: 10px;
+        width: 180px;
+    }
+
+    .instruction-output {
+        font-size: 10px;
+        width: 180px;
+    }
+}
+
 /* Ensuring preformatted text doesn't overflow */
 pre.disassembler-content {
     white-space: pre-wrap;
@@ -213,6 +225,20 @@ pre.memory-address {
     transition: all 0.1s ease-in-out;
 }
 
+@media (max-width: 520px) {
+    .instruction-btn {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 385px) {
+    .instruction-btn {
+        font-size: 8px;
+        padding: 2px 6px;
+    }
+}
+
 .instruction-btn:hover {
     background: #00FF33;
     color: #000000;
@@ -254,4 +280,10 @@ pre.memory-address {
 
 .xterm-viewport::-webkit-scrollbar-thumb:hover {
     background: #777;
+}
+
+@media (max-width: 940px) {
+    #terminalAccordion {
+        display: none;
+    }
 }
