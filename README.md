@@ -37,6 +37,7 @@
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#release-notes">Release Notes</a></li>
   </ol>
 </details>
 
