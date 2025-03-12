@@ -178,6 +178,8 @@ These are some of the inspirations as well as guides and resources that make the
   * Initial version
   * Supports minimum width of 1400px
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
