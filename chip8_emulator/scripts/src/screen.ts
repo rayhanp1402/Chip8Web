@@ -20,11 +20,6 @@ if (!CONTEXT) {
 canvas.width = PIXEL_WIDTH;
 canvas.height = PIXEL_HEIGHT;
 
-// Scale the canvas using CSS to upscale it while maintaining the pixel grid
-const scale = 12;
-canvas.style.width = `${PIXEL_WIDTH * scale}px`;
-canvas.style.height = `${PIXEL_HEIGHT * scale}px`;
-
 canvas.style.imageRendering = "pixelated";  // Ensures crisp pixels in modern browsers
 CONTEXT.imageSmoothingEnabled = false;  // Disable anti-aliasing
 
