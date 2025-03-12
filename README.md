@@ -116,7 +116,9 @@ Cycle speed can be configured to determine how fast in which the emulator execut
 You can view the emulator's properties (such as the Registers and Memory) in real time as the emulator is executing.
 ### 7. Terminal
 Once a ROM is loaded, you can use the terminal to fiddle with the disassembler (breakpoints and step) 
-or configure the cycle speed. You can type help to view the commands.
+or configure the cycle speed. You can type help to view the commands. 
+
+Note: As of v1.1.0, Terminal will be hidden on smaller devices.
 ### 8. Keypad
 You can test your keyboard to keypad mapping by pressing any keys on your keyboard. If one of the keypad
 "glows" when you press a key on your keyboard, then it is the mapped key. For example, the "R" in my keyboard
@@ -174,9 +176,13 @@ These are some of the inspirations as well as guides and resources that make the
 <!-- RELEASE NOTES -->
 ## Release Notes
 
+* 2025-03-13 -- 1.1.0
+  * Minor update
+  * Responsive page with reliable minimum width of 375px
+  * Hide terminal under 940px
+
 * 2025-03-11 -- 1.0.0
   * Initial version
-  * Supports minimum width of 1400px
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
