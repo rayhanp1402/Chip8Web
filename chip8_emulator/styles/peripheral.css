@@ -54,16 +54,9 @@
     }
 }
 
-/* @media (max-width: 410px) {
-    #screen {
-        width: calc(64px * 2);
-        height: calc(32px * 2);
-    }
-} */
-
 .peripheral-container {
     display: flex;
-    background-color: blue;
+    /* background-color: blue; */
 }
 
 .keypad-title {

@@ -58,11 +58,37 @@ pre.disassembler-content {
     margin: 0;
 }
 
+pre.memory-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
 pre.memory-address {
     white-space: pre-wrap;
     word-wrap: break-word;
     margin: 0;
     color: #bbbbbb;
+}
+
+@media (max-width: 1105px) {
+    pre.memory-address {
+        font-size: 10px;
+    }
+
+    pre.memory-content {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 820px) {
+    pre.memory-address {
+        font-size: 6px;
+    }
+
+    pre.memory-content {
+        font-size: 6px;
+    }
 }
 
 .disassembler-container {
@@ -103,6 +129,18 @@ pre.memory-address {
     font-family: monospace;
 }
 
+@media (max-width: 820px) {
+    .memory-output {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .memory-output {
+        gap: 4px;
+    }
+}
+
 .memory-btn {
     font-family: 'Silkscreen', sans-serif;
     font-size: 14px;
@@ -114,6 +152,24 @@ pre.memory-address {
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.1s ease-in-out;
+}
+
+@media (max-width: 1105px) {
+    .memory-btn {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 820px) {
+    .memory-btn {
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 690px) {
+    .memory-btn {
+        padding: 4px 9px;
+    }
 }
 
 .memory-btn:hover {

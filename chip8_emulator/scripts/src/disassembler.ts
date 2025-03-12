@@ -253,7 +253,7 @@ export class Disassembler {
                 msbByteIndex += memoryViewTotalColumns - 1;
             } else {
                 memoryOutputContents.innerHTML += `
-                   <pre class="disassembler-content">${this.chip8.getMemory()[memoryIndex].toString(16).padStart(2, "0").toUpperCase()}</pre>
+                   <pre class="memory-content">${this.chip8.getMemory()[memoryIndex].toString(16).padStart(2, "0").toUpperCase()}</pre>
                 `;
                 ++memoryIndex;
             }
