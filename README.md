@@ -174,7 +174,7 @@ These are some of the inspirations as well as guides and resources that make the
 <!-- RELEASE NOTES -->
 ## Release Notes
 
-* 2025-03-11 -- 1.0.8
+* 2025-03-11 -- 1.0.0
   * Initial version
   * Supports minimum width of 1400px
 
