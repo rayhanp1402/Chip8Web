@@ -28,11 +28,13 @@ import java.util.*;
 public class RomService {
     private final RomRepository romRepository;
     private final S3Client s3Client;
+    private final S3Presigner presigner;
 
     @Autowired
-    public RomService(RomRepository romRepository, S3Client s3Client) {
+    public RomService(RomRepository romRepository, S3Client s3Client, S3Presigner presigner) {
         this.romRepository = romRepository;
         this.s3Client = s3Client;
+        this.presigner = presigner;
     }
 
     public List<Rom> getRomsByUserIdAndIsPublic(UUID userId, boolean isPublic) {
@@ -125,32 +127,19 @@ public class RomService {
         // Generate pre-signed URL
         String objectKey = userId + "/" + romName;
 
-        AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(
-                System.getenv("AWS_ACCESS_KEY_ID"),
-                System.getenv("AWS_SECRET_ACCESS_KEY")
-        ));
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(System.getenv("AWS_BUCKET_NAME"))
+                .key(objectKey)
+                .build();
 
-        try (S3Presigner presigner = S3Presigner.builder()
-                .credentialsProvider(credentialsProvider)
-                .region(Region.of(System.getenv("AWS_REGION")))
-                .build()) {
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(getObjectRequest)
+                .build();
 
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(System.getenv("AWS_BUCKET_NAME"))
-                    .key(objectKey)
-                    .build();
+        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
 
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .getObjectRequest(getObjectRequest)
-                    .build();
-
-            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
-
-            return presignedRequest.url();
-        } catch (S3Exception e) {
-            throw new RuntimeException("Error generating download URL", e);
-        }
+        return presignedRequest.url();
     }
 
     public URL getPersonalRomDownloadUrl(UUID userId, String romName) {
@@ -167,31 +156,18 @@ public class RomService {
         // Generate pre-signed URL
         String objectKey = userId + "/" + romName;
 
-        AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(
-                System.getenv("AWS_ACCESS_KEY_ID"),
-                System.getenv("AWS_SECRET_ACCESS_KEY")
-        ));
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(System.getenv("AWS_BUCKET_NAME"))
+                .key(objectKey)
+                .build();
 
-        try (S3Presigner presigner = S3Presigner.builder()
-                .credentialsProvider(credentialsProvider)
-                .region(Region.of(System.getenv("AWS_REGION")))
-                .build()) {
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(getObjectRequest)
+                .build();
 
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(System.getenv("AWS_BUCKET_NAME"))
-                    .key(objectKey)
-                    .build();
+        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
 
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .getObjectRequest(getObjectRequest)
-                    .build();
-
-            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
-
-            return presignedRequest.url();
-        } catch (S3Exception e) {
-            throw new RuntimeException("Error generating download URL", e);
-        }
+        return presignedRequest.url();
     }
 }
