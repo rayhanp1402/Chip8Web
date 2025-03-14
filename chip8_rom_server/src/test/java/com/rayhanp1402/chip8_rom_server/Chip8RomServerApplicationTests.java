@@ -16,9 +16,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +46,9 @@ public class Chip8RomServerApplicationTests {
 
     @Mock
     private Rom rom;
+
+    @Mock
+    private S3Presigner s3Presigner;
 
     private UUID userId;
     private String romName;
@@ -192,5 +199,54 @@ public class Chip8RomServerApplicationTests {
 
         verify(s3Client, times(1)).deleteObject(any(DeleteObjectRequest.class));
         verify(romRepository, times(1)).deleteById(romId);
+    }
+
+    @Test
+    void shouldThrowExceptionForNonExistentPublicRom() {
+        when(romRepository.findById(romId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> romService.getPublicRomDownloadUrl(userId, romName));
+    }
+
+    @Test
+    void shouldThrowExceptionForPrivatePublicRomDownloadUrl() {
+        when(romRepository.findById(romId)).thenReturn(Optional.of(rom));
+
+        assertThrows(IllegalArgumentException.class, () -> romService.getPublicRomDownloadUrl(userId, romName));
+    }
+
+    @Test
+    void shouldReturnPublicRomDownloadUrl() {
+        Rom privateRom = new Rom(romId, true);
+
+        when(romRepository.findById(romId)).thenReturn(Optional.of(privateRom));
+
+        URL mockUrl = mock(URL.class);
+        PresignedGetObjectRequest presignedRequest = mock(PresignedGetObjectRequest.class);
+        when(presignedRequest.url()).thenReturn(mockUrl);
+
+        when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(presignedRequest);
+
+        URL result = romService.getPublicRomDownloadUrl(userId, romName);
+
+        assertNotNull(result);
+        assertEquals(mockUrl, result);
+    }
+
+    @Test
+    void shouldReturnPersonalRomDownloadUrl() {
+        Rom rom = new Rom(romId, false);
+        when(romRepository.findById(romId)).thenReturn(Optional.of(rom));
+
+        URL mockUrl = mock(URL.class);
+        PresignedGetObjectRequest presignedRequest = mock(PresignedGetObjectRequest.class);
+        when(presignedRequest.url()).thenReturn(mockUrl);
+
+        when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(presignedRequest);
+
+        URL result = romService.getPersonalRomDownloadUrl(userId, romName);
+
+        assertNotNull(result);
+        assertEquals(mockUrl, result);
     }
 }
