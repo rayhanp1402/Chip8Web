@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,16 +24,20 @@ public class Chip8RomServerApplicationTests {
     @Mock
     private RomRepository romRepository;
 
+    private List<Rom> createExpectedRoms(UUID userId) {
+        return List.of(
+                new Rom(new RomId(userId, "Pong.ch8"), true),
+                new Rom(new RomId(userId, "Space Invaders.ch8"), true),
+                new Rom(new RomId(userId, "Tetris.ch8"), true)
+        );
+    }
+
     @Test
     public void getRomsByUserIdAndIsPublic() {
         UUID userId = UUID.randomUUID();
         boolean isPublic = true;
 
-        List<Rom> expectedRoms = Arrays.asList(
-                new Rom(new RomId(userId, "Pong.ch8"), true),
-                new Rom(new RomId(userId, "Space Invaders.ch8"), true),
-                new Rom(new RomId(userId, "Tetris.ch8"), true)
-        );
+        List<Rom> expectedRoms = createExpectedRoms(userId);
 
         when(romRepository.findByIdUserIdAndIsPublic(userId, isPublic)).thenReturn(expectedRoms);
 
@@ -42,5 +45,20 @@ public class Chip8RomServerApplicationTests {
 
         assertEquals(expectedRoms, actualRoms);
         verify(romRepository, times(1)).findByIdUserIdAndIsPublic(userId, isPublic);
+    }
+
+    @Test
+    public void getPublicRoms() {
+        UUID userId = UUID.randomUUID();
+        boolean isPublic = true;
+
+        List<Rom> expectedRoms = createExpectedRoms(userId);
+
+        when(romRepository.findByIsPublic(isPublic)).thenReturn(expectedRoms);
+
+        List<Rom> actualRoms = romService.getPublicRoms(isPublic);
+
+        assertEquals(expectedRoms, actualRoms);
+        verify(romRepository, times(1)).findByIsPublic(isPublic);
     }
 }
