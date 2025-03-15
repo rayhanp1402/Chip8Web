@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   chip8_rom_server:
-    image: asia-southeast2-docker.pkg.dev/chip8-web/chip8-repo/chip8-image:latest
+    image: asia-southeast2-docker.pkg.dev/chip8-web/chip8-repo/chip8-rom-server-image:latest
     build:
       context: ./chip8_rom_server
       dockerfile: Dockerfile

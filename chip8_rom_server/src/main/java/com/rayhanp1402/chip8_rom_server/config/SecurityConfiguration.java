@@ -1,4 +1,4 @@
-package com.rayhanp1402.chip8_rom_server;
+package com.rayhanp1402.chip8_rom_server.config;
 
 import io.jsonwebtoken.security.Keys;
 import org.springframework.context.annotation.Bean;
