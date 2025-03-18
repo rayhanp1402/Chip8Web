@@ -177,6 +177,9 @@ These are some of the inspirations as well as guides and resources that make the
 
 <!-- RELEASE NOTES -->
 ## Release Notes
+* 2025-03-18 -- 1.1.0
+  * Added touchscreen support for keypad
+
 * 2025-03-13 -- 1.1.0
   * Minor backend fix
   * Inject configuration class for S3 presigner instead of directly building it in the services
