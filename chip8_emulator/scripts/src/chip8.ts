@@ -131,22 +131,33 @@ export class CHIP8 {
 
         // The same as above, this time with the clicked buttons on the screen
         document.querySelectorAll(".key").forEach((button) => {
-            button.addEventListener("mousedown", () => {
+            const handlePress = () => {
                 const keyHex = button.id.replace("key_", ""); // Extract the key identifier
                 const keyValue = parseInt(keyHex, 16); // Convert it to a hex number (0-15)
 
                 if (!isNaN(keyValue)) {
                     this.keys[keyValue] = true;
                 }
-            });
+            };
 
-            button.addEventListener("mouseup", () => {
+            const handleRelease = () => {
                 const keyHex = button.id.replace("key_", "");
                 const keyValue = parseInt(keyHex, 16);
 
                 if (!isNaN(keyValue)) {
                     this.keys[keyValue] = false;
                 }
+            };
+
+            button.addEventListener("mousedown", handlePress);
+            button.addEventListener("mouseup", handleRelease);
+            button.addEventListener("touchstart", (e) => {
+                e.preventDefault(); // Prevents unintended mouse events from firing
+                handlePress();
+            });
+            button.addEventListener("touchend", (e) => {
+                e.preventDefault(); // Prevents unintended mouse events from firing
+                handleRelease();
             });
         });
 
